@@ -13,3 +13,5 @@ MIDDLEWARE = [
     for middleware in MIDDLEWARE  # noqa: F405
     if middleware != "whitenoise.middleware.WhiteNoiseMiddleware"
 ]
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True
