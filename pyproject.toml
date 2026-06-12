@@ -22,6 +22,7 @@ include = ["apps*", "config*"]
 
 [dependency-groups]
 dev = [
+  "factory-boy==3.3.3",
   "pytest==8.4.2",
   "pytest-django==4.11.1",
 ]
