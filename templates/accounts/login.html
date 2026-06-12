@@ -1,16 +1,21 @@
 {% extends "layouts/public.html" %}
 {% block title %}Sign in | Elora{% endblock %}
 {% block content %}
-<main>
-  <section>
-    <p>Elora</p>
-    <h1>Welcome back</h1>
-    <p>Powering Modern Education</p>
-    <form method="post">
+<main class="mx-auto flex min-h-screen max-w-md items-center px-6">
+  <section class="w-full rounded-3xl bg-white p-8 shadow-2xl">
+    <p class="text-sm font-semibold text-blue-700">Elora</p>
+    <h1 class="mt-2 text-3xl font-bold text-slate-950">Welcome back</h1>
+    <p class="mt-2 text-slate-600">Powering Modern Education</p>
+    <form method="post" class="mt-8 space-y-5">
       {% csrf_token %}
       {{ form.non_field_errors }}
       {{ form.as_p }}
-      <button type="submit">Sign in</button>
+      <button
+        type="submit"
+        class="w-full rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white"
+      >
+        Sign in
+      </button>
     </form>
   </section>
 </main>
