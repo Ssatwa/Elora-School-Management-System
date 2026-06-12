@@ -5,6 +5,7 @@ from django.db import models
 
 from apps.accounts.managers import UserManager
 from apps.core.models import TimeStampedModel, UUIDModel
+from apps.tenancy.managers import TenantManager
 
 
 class User(AbstractUser):
@@ -46,6 +47,8 @@ class Membership(UUIDModel, TimeStampedModel):
     )
     roles = models.ManyToManyField(Role, related_name="memberships")
     is_active = models.BooleanField(default=True)
+
+    objects = TenantManager()
 
     class Meta:
         constraints = [
