@@ -2,6 +2,7 @@ from django.http import Http404
 
 from apps.tenancy.context import current_school
 from apps.tenancy.models import SchoolDomain
+from apps.tenancy.rls import clear_database_school, set_database_school
 
 
 class TenantMiddleware:
@@ -25,10 +26,12 @@ class TenantMiddleware:
                     raise Http404("School not found")
                 request.school = domain.school
                 current_school.set(domain.school)
+                set_database_school(domain.school.id)
 
             response = self.get_response(request)
             if request.school:
                 response.headers["X-Elora-School"] = str(request.school.id)
             return response
         finally:
+            clear_database_school()
             current_school.reset(token)
