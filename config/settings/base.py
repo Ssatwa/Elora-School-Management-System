@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.tenancy",
     "apps.accounts",
+    "apps.analytics",
 ]
 
 MIDDLEWARE = [
@@ -43,7 +44,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 AUTH_USER_MODEL = "accounts.User"
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "/dashboard/"
+LOGIN_REDIRECT_URL = "analytics:dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"
 
 TEMPLATES = [
