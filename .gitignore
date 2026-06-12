@@ -1,0 +1,29 @@
+.worktrees/
+.superpowers/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Node
+node_modules/
+
+# Environment
+.env
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
