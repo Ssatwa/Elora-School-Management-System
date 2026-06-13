@@ -9,3 +9,9 @@ def test_project_uses_nairobi_timezone():
 def test_health_url_is_registered(client):
     response = client.get(reverse("health"))
     assert response.status_code == 200
+
+
+def test_milestone_two_apps_are_installed():
+    assert "apps.academics" in settings.INSTALLED_APPS
+    assert "apps.staff" in settings.INSTALLED_APPS
+    assert "apps.learners" in settings.INSTALLED_APPS

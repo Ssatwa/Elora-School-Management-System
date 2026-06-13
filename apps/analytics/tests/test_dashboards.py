@@ -47,3 +47,25 @@ def test_dashboard_matches_role(client, role_code, role_name, expected_heading):
 
     assert response.status_code == 200
     assert expected_heading in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_sidebar_only_shows_modules_authorized_for_role(client):
+    school = School.objects.create(name="Green Hills", slug="green-sidebar")
+    domain = SchoolDomain.objects.create(
+        school=school,
+        hostname="green-sidebar.localhost",
+        is_primary=True,
+    )
+    teacher = get_user_model().objects.create_user("teacher-sidebar@example.test")
+    teacher_role = Role.objects.create(code="teacher", name="Teacher")
+    membership = Membership.objects.create(user=teacher, school=school)
+    membership.roles.add(teacher_role)
+    client.force_login(teacher)
+
+    response = client.get(reverse("analytics:dashboard"), HTTP_HOST=domain.hostname)
+    content = response.content.decode()
+
+    assert "Learners" in content
+    assert "Academic structure" not in content
+    assert ">Staff<" not in content

@@ -1,0 +1,39 @@
+<section data-staff-tables="true" class="grid gap-6 xl:grid-cols-[2fr_1fr]">
+  <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 px-5 py-4">
+      <h2 class="font-semibold">Teaching staff</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200 text-sm">
+        <thead class="bg-slate-50 text-left text-slate-600">
+          <tr><th class="px-5 py-3">Employee</th><th class="px-5 py-3">Account</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Lessons</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for teacher in teachers %}
+          <tr>
+            <td class="px-5 py-3 font-medium">{{ teacher.employee_number }}</td>
+            <td class="px-5 py-3">{{ teacher.membership.user.email }}</td>
+            <td class="px-5 py-3">{{ teacher.get_status_display }}</td>
+            <td class="px-5 py-3">{{ teacher.current_weekly_lessons }}</td>
+          </tr>
+          {% empty %}
+          <tr><td class="px-5 py-6 text-slate-500" colspan="4">No staff match this view.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="font-semibold">Departments</h2>
+    <div class="mt-4 space-y-3">
+      {% for department in departments %}
+      <div class="rounded-xl bg-slate-50 p-4">
+        <p class="font-medium">{{ department.name }}</p>
+        <p class="mt-1 text-sm text-slate-600">{{ department.head|default:"Head not assigned" }}</p>
+      </div>
+      {% empty %}
+      <p class="text-sm text-slate-500">No departments configured.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>

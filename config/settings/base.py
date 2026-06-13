@@ -12,6 +12,7 @@ ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
     default=["localhost", ".localhost", "127.0.0.1", "testserver"],
 )
+ALLOW_DEMO_SEED = env.bool("ALLOW_DEMO_SEED", default=False)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -25,6 +26,9 @@ INSTALLED_APPS = [
     "apps.tenancy",
     "apps.accounts",
     "apps.analytics",
+    "apps.academics",
+    "apps.staff",
+    "apps.learners",
 ]
 
 MIDDLEWARE = [
@@ -59,6 +63,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.accounts.context_processors.school_module_access",
             ],
         },
     }

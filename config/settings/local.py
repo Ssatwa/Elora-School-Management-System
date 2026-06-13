@@ -1,6 +1,7 @@
 from .base import *  # noqa: F403
 
 DEBUG = True
+ALLOW_DEMO_SEED = True
 
 if env.bool("LOCAL_USE_SQLITE", default=True):  # noqa: F405
     _sqlite_path = Path(  # noqa: F405
