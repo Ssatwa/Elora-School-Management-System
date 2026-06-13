@@ -20,7 +20,13 @@ class AcademicLookupAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-@admin.register(Strand, SubStrand, LearningOutcome, OutcomeCompetency)
+@admin.register(Strand, SubStrand, LearningOutcome)
 class CurriculumAdmin(admin.ModelAdmin):
     list_filter = ("school",)
     search_fields = ("code",)
+
+
+@admin.register(OutcomeCompetency)
+class OutcomeCompetencyAdmin(admin.ModelAdmin):
+    list_filter = ("school",)
+    search_fields = ("outcome__code", "competency__code", "competency__name")

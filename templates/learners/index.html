@@ -17,9 +17,11 @@
       <label class="sr-only" for="learner-search">Search learners</label>
       <input id="learner-search" name="q" type="search" placeholder="Name or admission number">
     </form>
-    <a class="rounded-xl bg-blue-700 px-4 py-2.5 text-center text-sm font-semibold text-white" href="{% url 'learners:admit' %}">
-      Admit learner
-    </a>
+    {% if can_administer_learners %}
+      <a class="rounded-xl bg-blue-700 px-4 py-2.5 text-center text-sm font-semibold text-white" href="{% url 'learners:admit' %}">
+        Admit learner
+      </a>
+    {% endif %}
   </div>
 </header>
 <div id="learner-table" class="mt-8">

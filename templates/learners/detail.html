@@ -7,7 +7,7 @@
     <h1 class="mt-1 text-3xl font-bold tracking-tight">{{ learner.full_name }}</h1>
     <p class="mt-2 text-slate-600">{{ learner.get_status_display }} · Admitted {{ learner.admission_date }}</p>
   </div>
-  {% if learner.status == "active" %}
+  {% if learner.status == "active" and can_administer_learners %}
   <a class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold" href="{% url 'learners:transfer' learner_id=learner.id %}">
     Transfer learner
   </a>
