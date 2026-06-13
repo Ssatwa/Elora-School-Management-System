@@ -1,9 +1,11 @@
+from django.contrib.auth.models import AnonymousUser
+
 from apps.accounts.permissions import has_school_role
 
 
 def school_module_access(request):
     school = getattr(request, "school", None)
-    user = request.user
+    user = getattr(request, "user", AnonymousUser())
     return {
         "can_manage_academics": has_school_role(
             user,
