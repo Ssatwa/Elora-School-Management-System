@@ -19,6 +19,7 @@ from apps.academics.models import (
 )
 from apps.accounts.models import Membership, Role, User
 from apps.accounts.roles import ROLE_DEFINITIONS
+from apps.activities.models import ActivityParticipation, Club
 from apps.assessments.models import (
     Assessment,
     AssessmentResult,
@@ -43,6 +44,7 @@ from apps.learners.models import (
     MedicalRecord,
 )
 from apps.learning.models import Assignment, Resource, Submission
+from apps.library.models import BorrowRecord, LibraryBook
 from apps.reports.models import ReportCard
 from apps.reports.services import (
     create_report_snapshot,
@@ -52,6 +54,7 @@ from apps.reports.services import (
 from apps.staff.models import Department, StaffAssignment, TeacherProfile
 from apps.tenancy.models import School, SchoolDomain
 from apps.timetabling.models import Room, Timetable, TimetableEntry, TimetablePeriod
+from apps.wellbeing.models import DisciplineRecord
 
 DEMO_SCHOOLS = (
     ("green-hills", "Green Hills Academy"),
@@ -634,4 +637,56 @@ class Command(BaseCommand):
             recipient=memberships["parent"].user,
             subject="Amina's mathematics progress",
             defaults={"body": "Amina is participating confidently in number work."},
+        )
+        book, _ = LibraryBook.objects.update_or_create(
+            school=school,
+            isbn=f"978-{school.slug[:4]}-0001",
+            defaults={
+                "title": "CBC Mathematics in Practice",
+                "author": "Elora Education Press",
+                "category": "Mathematics",
+                "total_copies": 8,
+                "available_copies": 7,
+            },
+        )
+        BorrowRecord.objects.update_or_create(
+            school=school,
+            book=book,
+            learner=learner,
+            status=BorrowRecord.Status.BORROWED,
+            defaults={
+                "borrowed_by": memberships["librarian"].user,
+                "due_date": date(2026, 6, 27),
+            },
+        )
+        DisciplineRecord.objects.update_or_create(
+            school=school,
+            learner=learner,
+            title="Peer support leadership",
+            defaults={
+                "category": DisciplineRecord.Category.POSITIVE,
+                "details": "Helped a new learner settle into the class routine.",
+                "action_taken": "Recognized during class meeting.",
+                "recorded_by": memberships["guidance_counsellor"].user,
+            },
+        )
+        club, _ = Club.objects.update_or_create(
+            school=school,
+            name="Robotics and Innovation Club",
+            defaults={
+                "category": "STEM",
+                "patron": memberships["teacher"],
+                "meeting_schedule": "Wednesday 3:30 PM",
+                "is_active": True,
+            },
+        )
+        ActivityParticipation.objects.update_or_create(
+            school=school,
+            club=club,
+            learner=learner,
+            defaults={
+                "role": "Design Lead",
+                "achievements": "Built a working water-level alert prototype.",
+                "is_active": True,
+            },
         )

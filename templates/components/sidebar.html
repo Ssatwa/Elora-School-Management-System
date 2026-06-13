@@ -64,5 +64,8 @@
         Communication
       </a>
     {% endif %}
+    {% if can_view_library %}<a class="block rounded-xl px-4 py-3 font-medium text-slate-300 hover:bg-white/10 hover:text-white" href="/library/">Library</a>{% endif %}
+    {% if can_view_wellbeing %}<a class="block rounded-xl px-4 py-3 font-medium text-slate-300 hover:bg-white/10 hover:text-white" href="/wellbeing/">Wellbeing</a>{% endif %}
+    {% if can_view_activities %}<a class="block rounded-xl px-4 py-3 font-medium text-slate-300 hover:bg-white/10 hover:text-white" href="/activities/">Activities</a>{% endif %}
   </nav>
 </aside>
