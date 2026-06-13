@@ -1,0 +1,18 @@
+{% extends "layouts/app.html" %}
+{% block title %}{{ timetable.name }} | Elora{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">{{ timetable.get_status_display }}</p><h1 class="mt-1 text-3xl font-bold">{{ timetable.name }}</h1><p class="mt-2 text-slate-600">{{ timetable.academic_year }} · {{ timetable.term }}</p></div>
+    {% if can_manage_timetables and timetable.status == 'draft' %}<form method="post" action="{% url 'timetabling:publish' timetable.id %}">{% csrf_token %}<button class="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white">Publish timetable</button></form>{% endif %}
+  </div>
+  {% if conflicts %}<div class="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-rose-800"><h2 class="font-semibold">Resolve conflicts before publishing</h2>{% for conflict in conflicts %}<p class="mt-2 text-sm">{{ conflict }}</p>{% endfor %}</div>{% endif %}
+  {% if can_manage_timetables and timetable.status == 'draft' %}
+  <form method="post" action="{% url 'timetabling:add-entry' timetable.id %}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">{% csrf_token %}<h2 class="mb-4 text-lg font-semibold">Add lesson</h2>{{ entry_form.as_p }}<button class="mt-4 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white">Add lesson</button></form>
+  {% endif %}
+  <div class="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm"><table class="min-w-full divide-y divide-slate-200 text-sm">
+    <thead class="bg-slate-50 text-left"><tr><th class="px-5 py-3">Period</th><th class="px-5 py-3">Class</th><th class="px-5 py-3">Learning area</th><th class="px-5 py-3">Teacher</th><th class="px-5 py-3">Room</th></tr></thead>
+    <tbody class="divide-y divide-slate-100">{% for entry in entries %}<tr><td class="px-5 py-4">{{ entry.period }}</td><td class="px-5 py-4"><a class="font-medium text-blue-700" href="{% url 'timetabling:class-schedule' entry.stream.id %}">{{ entry.stream }}</a></td><td class="px-5 py-4">{{ entry.learning_area }}</td><td class="px-5 py-4">{{ entry.teacher }}</td><td class="px-5 py-4">{{ entry.room.code }}</td></tr>{% empty %}<tr><td colspan="5" class="px-5 py-10 text-center text-slate-500">Add the first lesson to this timetable.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endblock %}

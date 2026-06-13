@@ -1,7 +1,8 @@
-from datetime import date
+from datetime import date, time
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+from django.utils import timezone
 
 from apps.academics.models import (
     AcademicYear,
@@ -17,6 +18,12 @@ from apps.academics.models import (
 )
 from apps.accounts.models import Membership, Role, User
 from apps.accounts.roles import ROLE_DEFINITIONS
+from apps.attendance.models import (
+    AbsenceAlert,
+    AttendanceRegister,
+    LearnerAttendanceEntry,
+    StaffAttendanceEntry,
+)
 from apps.learners.models import (
     Enrollment,
     Guardian,
@@ -26,6 +33,7 @@ from apps.learners.models import (
 )
 from apps.staff.models import Department, StaffAssignment, TeacherProfile
 from apps.tenancy.models import School, SchoolDomain
+from apps.timetabling.models import Room, Timetable, TimetableEntry, TimetablePeriod
 
 DEMO_SCHOOLS = (
     ("green-hills", "Green Hills Academy"),
@@ -116,8 +124,9 @@ class Command(BaseCommand):
             ("Term 2", 2, date(2026, 5, 4), date(2026, 8, 7)),
             ("Term 3", 3, date(2026, 8, 31), date(2026, 11, 27)),
         )
+        terms = {}
         for name, sequence, start_date, end_date in term_dates:
-            Term.objects.update_or_create(
+            terms[sequence], _ = Term.objects.update_or_create(
                 school=school,
                 academic_year=year,
                 sequence=sequence,
@@ -300,3 +309,113 @@ class Command(BaseCommand):
                 "start_date": date(2026, 1, 6),
             },
         )
+
+        attendance_date = date(2026, 6, 12)
+        learner_register, _ = AttendanceRegister.objects.update_or_create(
+            school=school,
+            attendance_date=attendance_date,
+            session=AttendanceRegister.Session.MORNING,
+            subject_type=AttendanceRegister.SubjectType.LEARNER,
+            stream=grades["G7"][1],
+            defaults={
+                "status": AttendanceRegister.Status.COMPLETED,
+                "marked_by": memberships["class_teacher"].user,
+                "completed_at": timezone.now(),
+            },
+        )
+        learner_entry, _ = LearnerAttendanceEntry.objects.update_or_create(
+            school=school,
+            register=learner_register,
+            learner=learner,
+            defaults={
+                "status": LearnerAttendanceEntry.Status.ABSENT,
+                "note": "Guardian notified of absence.",
+            },
+        )
+        AbsenceAlert.objects.update_or_create(
+            school=school,
+            learner_entry=learner_entry,
+            defaults={
+                "recipient_summary": guardian.phone_number,
+                "status": AbsenceAlert.Status.PENDING,
+            },
+        )
+        staff_register, _ = AttendanceRegister.objects.update_or_create(
+            school=school,
+            attendance_date=attendance_date,
+            session=AttendanceRegister.Session.MORNING,
+            subject_type=AttendanceRegister.SubjectType.STAFF,
+            defaults={
+                "status": AttendanceRegister.Status.COMPLETED,
+                "marked_by": memberships["principal"].user,
+                "completed_at": timezone.now(),
+            },
+        )
+        StaffAttendanceEntry.objects.update_or_create(
+            school=school,
+            register=staff_register,
+            teacher=teacher_profiles["teacher"],
+            defaults={"status": StaffAttendanceEntry.Status.PRESENT},
+        )
+
+        rooms = {}
+        for code, name in (("R1", "Innovation Room"), ("R2", "Science Lab")):
+            rooms[code], _ = Room.objects.update_or_create(
+                school=school,
+                code=code,
+                defaults={"name": name, "capacity": 40, "is_active": True},
+            )
+        periods = {}
+        for sequence, name, start_time, end_time in (
+            (1, "Lesson 1", time(8, 0), time(8, 40)),
+            (2, "Lesson 2", time(8, 40), time(9, 20)),
+            (3, "Lesson 3", time(9, 20), time(10, 0)),
+        ):
+            periods[sequence], _ = TimetablePeriod.objects.update_or_create(
+                school=school,
+                weekday=TimetablePeriod.Weekday.MONDAY,
+                sequence=sequence,
+                defaults={
+                    "name": name,
+                    "start_time": start_time,
+                    "end_time": end_time,
+                    "is_break": False,
+                },
+            )
+        timetable, _ = Timetable.objects.update_or_create(
+            school=school,
+            academic_year=year,
+            term=terms[2],
+            name="Term 2 master",
+            defaults={
+                "status": Timetable.Status.PUBLISHED,
+                "published_by": memberships["principal"].user,
+                "published_at": timezone.now(),
+            },
+        )
+        lesson_values = (
+            (
+                periods[1],
+                learning_areas["MATH"],
+                teacher_profiles["teacher"],
+                rooms["R1"],
+            ),
+            (
+                periods[2],
+                learning_areas["SCI"],
+                teacher_profiles["department_head"],
+                rooms["R2"],
+            ),
+        )
+        for period, learning_area, teacher, room in lesson_values:
+            TimetableEntry.objects.update_or_create(
+                school=school,
+                timetable=timetable,
+                period=period,
+                stream=grades["G7"][1],
+                defaults={
+                    "learning_area": learning_area,
+                    "teacher": teacher,
+                    "room": room,
+                },
+            )

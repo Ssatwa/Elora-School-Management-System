@@ -1,0 +1,23 @@
+{% extends "layouts/app.html" %}
+{% block title %}Staff Attendance | Elora{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-6xl space-y-6">
+  <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Staff register</p><h1 class="mt-1 text-3xl font-bold">Take staff attendance</h1></div>
+  <form method="post" class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    {% csrf_token %}
+    <div class="grid gap-4 border-b border-slate-200 p-5 sm:grid-cols-2">{{ form.as_p }}</div>
+    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-slate-200 text-sm">
+      <thead class="bg-slate-50 text-left"><tr><th class="px-5 py-3">Staff member</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Arrival</th><th class="px-5 py-3">Note</th></tr></thead>
+      <tbody class="divide-y divide-slate-100">
+      {% for teacher in teachers %}
+        <tr><td class="px-5 py-4"><span class="font-medium">{{ teacher.membership.user.get_full_name|default:teacher.membership.user.email }}</span><br><span class="text-xs text-slate-500">{{ teacher.employee_number }}</span></td>
+        <td class="px-5 py-4"><select name="status_{{ teacher.id }}" class="rounded-lg border border-slate-300 px-3 py-2"><option value="present">Present</option><option value="absent">Absent</option><option value="late">Late</option><option value="excused">Excused</option></select></td>
+        <td class="px-5 py-4"><input type="time" name="arrival_time_{{ teacher.id }}" class="rounded-lg border border-slate-300 px-3 py-2"></td>
+        <td class="px-5 py-4"><input name="note_{{ teacher.id }}" class="w-full rounded-lg border border-slate-300 px-3 py-2"></td></tr>
+      {% empty %}<tr><td colspan="4" class="px-5 py-10 text-center text-slate-500">No active teachers found.</td></tr>{% endfor %}
+      </tbody>
+    </table></div>
+    <div class="flex justify-end border-t border-slate-200 p-5"><button class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white">Complete register</button></div>
+  </form>
+</div>
+{% endblock %}
