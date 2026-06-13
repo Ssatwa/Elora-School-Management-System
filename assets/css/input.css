@@ -9,17 +9,65 @@
 }
 
 @layer base {
+  :root {
+    --elora-canvas: #f4f7fb;
+    --elora-surface: #ffffff;
+    --elora-text: #0f172a;
+    --elora-muted: #64748b;
+    --elora-border: #dbe3ee;
+    --elora-primary: #1d4ed8;
+    --elora-success: #15803d;
+    --elora-warning: #b45309;
+    --elora-danger: #b91c1c;
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
+    --elora-canvas: #07111f;
+    --elora-surface: #0f1b2d;
+    --elora-text: #e8eef8;
+    --elora-muted: #94a3b8;
+    --elora-border: #22324a;
+    --elora-primary: #60a5fa;
+    --elora-success: #4ade80;
+    --elora-warning: #fbbf24;
+    --elora-danger: #f87171;
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    background-color: var(--elora-canvas);
+    color: var(--elora-text);
+    @apply antialiased;
   }
 
   input,
   select,
   textarea {
-    @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2;
+    border-color: var(--elora-border);
+    background-color: var(--elora-surface);
+    color: var(--elora-text);
+    @apply w-full rounded-xl border px-3 py-2;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--elora-muted);
   }
 
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-blue-600;
+    outline: 2px solid var(--elora-primary);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
   }
 }

@@ -1,11 +1,17 @@
 {% load static %}
 <!doctype html>
-<html lang="en" x-data="{ sidebarOpen: false }">
+<html lang="en" x-data="eloraShell">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="htmx-config" content='{"historyCacheSize": 0}'>
   <title>{% block title %}Elora{% endblock %}</title>
+  <script>
+    (() => {
+      const savedTheme = localStorage.getItem("elora-theme");
+      document.documentElement.dataset.theme = savedTheme === "dark" ? "dark" : "light";
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,9 +22,29 @@
 </head>
 <body>
   <a class="sr-only focus:not-sr-only" href="#main-content">Skip to content</a>
-  <div class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
-    {% include "components/sidebar.html" %}
+  <div data-elora-shell class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
+    <div id="primary-navigation" class="contents">
+      {% include "components/sidebar.html" %}
+    </div>
     <div class="min-w-0">
+      <div class="sr-only focus-within:not-sr-only">
+        <button
+          type="button"
+          aria-controls="primary-navigation"
+          :aria-expanded="sidebarOpen"
+          @click="sidebarOpen = !sidebarOpen"
+        >
+          Toggle navigation
+        </button>
+        <button
+          type="button"
+          data-theme-toggle
+          @click="toggleTheme()"
+          :aria-pressed="theme === 'dark'"
+        >
+          Toggle color theme
+        </button>
+      </div>
       {% include "components/topbar.html" %}
       <main id="main-content" class="p-4 sm:p-6 lg:p-8">
         {% include "components/messages.html" %}
