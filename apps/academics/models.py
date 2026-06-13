@@ -186,3 +186,247 @@ class Stream(UUIDModel, TimeStampedModel):
 
     def __str__(self):
         return f"{self.grade} {self.name}"
+
+
+class LearningArea(UUIDModel, TimeStampedModel):
+    school = models.ForeignKey(
+        "tenancy.School",
+        on_delete=models.CASCADE,
+        related_name="learning_areas",
+    )
+    code = models.SlugField(max_length=40)
+    name = models.CharField(max_length=120)
+    is_active = models.BooleanField(default=True)
+
+    objects = TenantManager()
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "code"],
+                name="unique_learning_area_code_per_school",
+            ),
+            models.UniqueConstraint(
+                fields=["school", "name"],
+                name="unique_learning_area_name_per_school",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["school", "is_active", "name"]),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class Strand(UUIDModel, TimeStampedModel):
+    school = models.ForeignKey(
+        "tenancy.School",
+        on_delete=models.CASCADE,
+        related_name="strands",
+    )
+    learning_area = models.ForeignKey(
+        LearningArea,
+        on_delete=models.PROTECT,
+        related_name="strands",
+    )
+    grade = models.ForeignKey(
+        Grade,
+        on_delete=models.PROTECT,
+        related_name="strands",
+    )
+    code = models.SlugField(max_length=50)
+    name = models.CharField(max_length=160)
+
+    objects = TenantManager()
+
+    class Meta:
+        ordering = ["learning_area__name", "grade__order", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "learning_area", "grade", "code"],
+                name="unique_strand_code_per_area_grade",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["school", "learning_area", "grade"]),
+        ]
+
+    def clean(self):
+        super().clean()
+        if (
+            self.learning_area_id
+            and self.grade_id
+            and (
+                self.school_id != self.learning_area.school_id
+                or self.school_id != self.grade.school_id
+            )
+        ):
+            raise ValidationError(
+                {"learning_area": "Learning area and grade must belong to the same school."}
+            )
+
+    def __str__(self):
+        return self.name
+
+
+class SubStrand(UUIDModel, TimeStampedModel):
+    school = models.ForeignKey(
+        "tenancy.School",
+        on_delete=models.CASCADE,
+        related_name="sub_strands",
+    )
+    strand = models.ForeignKey(
+        Strand,
+        on_delete=models.PROTECT,
+        related_name="sub_strands",
+    )
+    code = models.SlugField(max_length=60)
+    name = models.CharField(max_length=180)
+
+    objects = TenantManager()
+
+    class Meta:
+        ordering = ["strand__name", "name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "strand", "code"],
+                name="unique_sub_strand_code_per_strand",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["school", "strand"]),
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.strand_id and self.school_id != self.strand.school_id:
+            raise ValidationError({"strand": "Strand must belong to the same school."})
+
+    def __str__(self):
+        return self.name
+
+
+class LearningOutcome(UUIDModel, TimeStampedModel):
+    school = models.ForeignKey(
+        "tenancy.School",
+        on_delete=models.CASCADE,
+        related_name="learning_outcomes",
+    )
+    sub_strand = models.ForeignKey(
+        SubStrand,
+        on_delete=models.PROTECT,
+        related_name="learning_outcomes",
+    )
+    code = models.SlugField(max_length=80)
+    description = models.TextField()
+    competencies: models.ManyToManyField = models.ManyToManyField(
+        "Competency",
+        through="OutcomeCompetency",
+        related_name="learning_outcomes",
+    )
+
+    objects = TenantManager()
+
+    class Meta:
+        ordering = ["code"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "code"],
+                name="unique_learning_outcome_code_per_school",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["school", "sub_strand"]),
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.sub_strand_id and self.school_id != self.sub_strand.school_id:
+            raise ValidationError({"sub_strand": "Sub-strand must belong to the same school."})
+
+    def __str__(self):
+        return self.code
+
+
+class Competency(UUIDModel, TimeStampedModel):
+    school = models.ForeignKey(
+        "tenancy.School",
+        on_delete=models.CASCADE,
+        related_name="competencies",
+    )
+    code = models.SlugField(max_length=40)
+    name = models.CharField(max_length=160)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    objects = TenantManager()
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "code"],
+                name="unique_competency_code_per_school",
+            ),
+            models.UniqueConstraint(
+                fields=["school", "name"],
+                name="unique_competency_name_per_school",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["school", "is_active", "name"]),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class OutcomeCompetency(UUIDModel, TimeStampedModel):
+    school = models.ForeignKey(
+        "tenancy.School",
+        on_delete=models.CASCADE,
+        related_name="outcome_competencies",
+    )
+    outcome = models.ForeignKey(
+        LearningOutcome,
+        on_delete=models.CASCADE,
+        related_name="competency_links",
+    )
+    competency = models.ForeignKey(
+        Competency,
+        on_delete=models.CASCADE,
+        related_name="outcome_links",
+    )
+
+    objects = TenantManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "outcome", "competency"],
+                name="unique_outcome_competency_link",
+            )
+        ]
+        indexes = [
+            models.Index(fields=["school", "outcome"]),
+            models.Index(fields=["school", "competency"]),
+        ]
+
+    def clean(self):
+        super().clean()
+        if (
+            self.outcome_id
+            and self.competency_id
+            and (
+                self.school_id != self.outcome.school_id
+                or self.school_id != self.competency.school_id
+            )
+        ):
+            raise ValidationError(
+                {"competency": "Outcome and competency must belong to the same school."}
+            )
+
+    def __str__(self):
+        return f"{self.outcome} - {self.competency}"

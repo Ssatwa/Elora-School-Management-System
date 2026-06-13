@@ -1,10 +1,12 @@
 from datetime import date
+from typing import cast
 
 import pytest
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from apps.academics.models import AcademicYear, Grade, Stream, Term
+from apps.tenancy.models import School
 from tests.factories import SchoolFactory
 
 pytestmark = pytest.mark.django_db
@@ -12,7 +14,7 @@ pytestmark = pytest.mark.django_db
 
 def test_academic_year_dates_must_be_ordered():
     year = AcademicYear(
-        school=SchoolFactory(),
+        school=cast(School, SchoolFactory()),
         name="2026",
         start_date=date(2026, 12, 31),
         end_date=date(2026, 1, 1),
@@ -23,7 +25,7 @@ def test_academic_year_dates_must_be_ordered():
 
 
 def test_academic_year_name_is_unique_per_school():
-    school = SchoolFactory()
+    school = cast(School, SchoolFactory())
     AcademicYear.objects.create(
         school=school,
         name="2026",
@@ -41,7 +43,7 @@ def test_academic_year_name_is_unique_per_school():
 
 
 def test_term_must_fit_inside_academic_year():
-    school = SchoolFactory()
+    school = cast(School, SchoolFactory())
     year = AcademicYear.objects.create(
         school=school,
         name="2026",
@@ -62,8 +64,8 @@ def test_term_must_fit_inside_academic_year():
 
 
 def test_stream_requires_grade_from_same_school():
-    first_school = SchoolFactory()
-    second_school = SchoolFactory()
+    first_school = cast(School, SchoolFactory())
+    second_school = cast(School, SchoolFactory())
     grade = Grade.objects.create(
         school=first_school,
         code="G7",
@@ -83,8 +85,8 @@ def test_stream_requires_grade_from_same_school():
 
 
 def test_academic_models_are_explicitly_scoped_by_school():
-    first_school = SchoolFactory()
-    second_school = SchoolFactory()
+    first_school = cast(School, SchoolFactory())
+    second_school = cast(School, SchoolFactory())
     Grade.objects.create(
         school=first_school,
         code="G7",
