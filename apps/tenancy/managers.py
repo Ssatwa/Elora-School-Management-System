@@ -10,5 +10,5 @@ class TenantQuerySet(models.QuerySet):
         return self.filter(school=school)
 
 
-class TenantManager(models.Manager.from_queryset(TenantQuerySet)):
+class TenantManager(models.Manager.from_queryset(TenantQuerySet)):  # type: ignore[misc]
     pass

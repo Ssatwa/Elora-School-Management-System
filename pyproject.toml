@@ -22,12 +22,54 @@ include = ["apps*", "config*"]
 
 [dependency-groups]
 dev = [
+  "coverage[toml]==7.10.7",
+  "django-stubs==5.2.7",
   "factory-boy==3.3.3",
-  "pytest==8.4.2",
+  "mypy==1.18.2",
+  "pip-audit==2.9.0",
+  "pytest==9.0.3",
   "pytest-django==4.11.1",
+  "ruff==0.14.4",
+]
+
+[project.optional-dependencies]
+dev = [
+  "coverage[toml]==7.10.7",
+  "django-stubs==5.2.7",
+  "factory-boy==3.3.3",
+  "mypy==1.18.2",
+  "pip-audit==2.9.0",
+  "pytest==9.0.3",
+  "pytest-django==4.11.1",
+  "ruff==0.14.4",
 ]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.test"
 python_files = ["test_*.py"]
 addopts = "--strict-markers"
+
+[tool.coverage.run]
+source = ["apps"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["*/migrations/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "DJ"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+check_untyped_defs = true
+ignore_missing_imports = true
+exclude = ["apps/.*/migrations/"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"

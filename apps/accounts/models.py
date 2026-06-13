@@ -10,13 +10,13 @@ from apps.tenancy.managers import TenantManager
 
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = None
+    username = None  # type: ignore[assignment]
     email = models.EmailField(unique=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    objects = UserManager()
+    objects = UserManager()  # type: ignore[misc, assignment]
 
     def __str__(self):
         return self.email
