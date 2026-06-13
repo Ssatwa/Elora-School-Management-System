@@ -217,12 +217,18 @@ class Assessment(UUIDModel, TimeStampedModel):
                 errors[field_name] = (
                     f"{field_name.replace('_', ' ').title()} must belong to the same school."
                 )
-        if self.rubric_id and self.learning_area_id:
-            if self.rubric.learning_area_id != self.learning_area_id:
-                errors["rubric"] = "Rubric must match the selected learning area."
-        if self.rubric_id and self.stream_id:
-            if self.rubric.grade_id != self.stream.grade_id:
-                errors["rubric"] = "Rubric grade must match the selected stream."
+        if (
+            self.rubric_id
+            and self.learning_area_id
+            and self.rubric.learning_area_id != self.learning_area_id
+        ):
+            errors["rubric"] = "Rubric must match the selected learning area."
+        if (
+            self.rubric_id
+            and self.stream_id
+            and self.rubric.grade_id != self.stream.grade_id
+        ):
+            errors["rubric"] = "Rubric grade must match the selected stream."
         if errors:
             raise ValidationError(errors)
 
@@ -332,9 +338,12 @@ class CriterionRating(UUIDModel, TimeStampedModel):
                 errors[field_name] = (
                     f"{field_name.replace('_', ' ').title()} must belong to the same school."
                 )
-        if self.result_id and self.criterion_id:
-            if self.result.assessment.rubric_id != self.criterion.rubric_id:
-                errors["criterion"] = "Criterion must belong to the assessment rubric."
+        if (
+            self.result_id
+            and self.criterion_id
+            and self.result.assessment.rubric_id != self.criterion.rubric_id
+        ):
+            errors["criterion"] = "Criterion must belong to the assessment rubric."
         if errors:
             raise ValidationError(errors)
 

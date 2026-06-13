@@ -68,6 +68,26 @@ def test_milestone_three_rls_migration_covers_every_tenant_table():
     assert "FORCE ROW LEVEL SECURITY" in migration
 
 
+def test_milestone_four_rls_migration_covers_every_tenant_table():
+    migration = Path("apps/tenancy/migrations/0005_milestone_4_rls.py").read_text()
+    expected_tables = {
+        "assessments_ratinglevel",
+        "assessments_rubric",
+        "assessments_rubriccriterion",
+        "assessments_assessment",
+        "assessments_assessmentresult",
+        "assessments_criterionrating",
+        "assessments_evidence",
+        "assessments_assessmentworkflowevent",
+        "reports_reportcard",
+        "reports_reportgenerationjob",
+    }
+
+    for table in expected_tables:
+        assert table in migration
+    assert "FORCE ROW LEVEL SECURITY" in migration
+
+
 @pytest.mark.django_db(transaction=True)
 def test_rls_blocks_cross_school_memberships():
     if connection.vendor != "postgresql":

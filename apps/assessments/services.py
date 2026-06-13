@@ -107,28 +107,28 @@ def record_result(
         criterion = item["criterion"]
         rating = item["rating"]
         _require_school(school, criterion=criterion, rating=rating)
-        row = CriterionRating(
+        criterion_rating = CriterionRating(
             school=school,
             result=result,
             criterion=criterion,
             rating=rating,
             comment=item.get("comment", ""),
         )
-        row.full_clean()
-        row.save()
+        criterion_rating.full_clean()
+        criterion_rating.save()
     for item in evidence:
         values = dict(item)
         outcome = values.pop("outcome")
         _require_school(school, outcome=outcome)
-        row = Evidence(
+        evidence_item = Evidence(
             school=school,
             result=result,
             learner=learner,
             outcome=outcome,
             **values,
         )
-        row.full_clean()
-        row.save()
+        evidence_item.full_clean()
+        evidence_item.save()
 
     record_audit_event(
         school=school,

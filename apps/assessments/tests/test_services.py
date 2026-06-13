@@ -6,10 +6,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from apps.accounts.models import AuditLog
 from apps.assessments.models import (
     Assessment,
-    AssessmentResult,
     AssessmentWorkflowEvent,
-    CriterionRating,
-    Evidence,
     RatingLevel,
     Rubric,
     RubricCriterion,
