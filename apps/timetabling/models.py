@@ -199,8 +199,8 @@ class TimetableEntry(UUIDModel, TimeStampedModel):
             "teacher",
             "room",
         ):
-            value = getattr(self, field_name)
-            if getattr(self, f"{field_name}_id") and value.school_id != self.school_id:
+            related_id = getattr(self, f"{field_name}_id")
+            if related_id and getattr(self, field_name).school_id != self.school_id:
                 errors[field_name] = (
                     f"{field_name.replace('_', ' ').title()} must belong to the same school."
                 )

@@ -64,4 +64,21 @@ def school_module_access(request):
             "principal",
             "deputy_principal",
         ),
+        "can_view_timetables": has_school_role(
+            user,
+            school,
+            "school_admin",
+            "principal",
+            "deputy_principal",
+            "teacher",
+            "class_teacher",
+            "department_head",
+        ),
+        "can_manage_timetables": has_school_role(
+            user,
+            school,
+            "school_admin",
+            "principal",
+            "deputy_principal",
+        ),
     }

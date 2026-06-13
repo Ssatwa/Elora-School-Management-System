@@ -1,0 +1,25 @@
+{% extends "layouts/app.html" %}
+{% block title %}Timetables | Elora{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Academic operations</p><h1 class="mt-1 text-3xl font-bold">Timetable planning</h1><p class="mt-2 text-slate-600">Build conflict-free class and teacher schedules.</p></div>
+    <a href="{% url 'timetabling:my-schedule' %}" class="rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold">My schedule</a>
+  </div>
+  {% if can_manage_timetables %}
+  <div class="grid gap-4 xl:grid-cols-3">
+    <form method="post" action="{% url 'timetabling:create-timetable' %}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">{% csrf_token %}<h2 class="mb-4 font-semibold">New timetable</h2>{{ timetable_form.as_p }}<button class="mt-4 rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white">Create draft</button></form>
+    <form method="post" action="{% url 'timetabling:create-setup' 'room' %}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">{% csrf_token %}<h2 class="mb-4 font-semibold">Add room</h2>{{ room_form.as_p }}<button class="mt-4 rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white">Add room</button></form>
+    <form method="post" action="{% url 'timetabling:create-setup' 'period' %}" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">{% csrf_token %}<h2 class="mb-4 font-semibold">Add period</h2>{{ period_form.as_p }}<button class="mt-4 rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white">Add period</button></form>
+  </div>
+  {% endif %}
+  <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 p-5"><h2 class="text-lg font-semibold">Timetable versions</h2></div>
+    <div class="divide-y divide-slate-100">
+    {% for timetable in timetables %}
+      <a href="{% url 'timetabling:detail' timetable.id %}" class="flex items-center justify-between p-5 hover:bg-slate-50"><div><p class="font-semibold">{{ timetable.name }}</p><p class="text-sm text-slate-500">{{ timetable.academic_year }} · {{ timetable.term }} · {{ timetable.entries.count }} lessons</p></div><span class="rounded-full px-3 py-1 text-xs font-semibold {% if timetable.status == 'published' %}bg-emerald-100 text-emerald-800{% else %}bg-amber-100 text-amber-800{% endif %}">{{ timetable.get_status_display }}</span></a>
+    {% empty %}<p class="p-8 text-center text-slate-500">No timetable versions yet.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

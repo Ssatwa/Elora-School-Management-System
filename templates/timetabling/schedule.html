@@ -1,0 +1,6 @@
+{% extends "layouts/app.html" %}
+{% block title %}{{ heading }} | Elora{% endblock %}
+{% block content %}
+<div class="space-y-6"><div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Published timetable</p><h1 class="mt-1 text-3xl font-bold">{{ heading }}</h1></div>
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{% for entry in entries %}<article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm font-semibold text-blue-600">{{ entry.period }}</p><h2 class="mt-2 text-lg font-bold">{{ entry.learning_area }}</h2><p class="mt-2 text-sm text-slate-600">{{ entry.stream }} · {{ entry.room.code }}</p>{% if entry.teacher %}<p class="mt-1 text-sm text-slate-500">{{ entry.teacher }}</p>{% endif %}</article>{% empty %}<p class="text-slate-500">No published lessons are assigned.</p>{% endfor %}</div></div>
+{% endblock %}
