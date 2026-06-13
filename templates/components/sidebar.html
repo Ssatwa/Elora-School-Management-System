@@ -54,5 +54,15 @@
         Finance
       </a>
     {% endif %}
+    {% if can_view_learning %}
+      <a class="block rounded-xl px-4 py-3 font-medium text-slate-300 hover:bg-white/10 hover:text-white" href="/learning/">
+        Learning
+      </a>
+    {% endif %}
+    {% if can_view_communication %}
+      <a class="block rounded-xl px-4 py-3 font-medium text-slate-300 hover:bg-white/10 hover:text-white" href="/communication/">
+        Communication
+      </a>
+    {% endif %}
   </nav>
 </aside>

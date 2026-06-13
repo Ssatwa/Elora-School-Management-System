@@ -4,7 +4,9 @@ from django.core.management import call_command
 from apps.accounts.models import Membership, User
 from apps.assessments.models import Assessment, AssessmentResult, RatingLevel
 from apps.attendance.models import AttendanceRegister, LearnerAttendanceEntry
+from apps.communication.models import Announcement, Notification
 from apps.finance.models import Invoice, Payment, Receipt
+from apps.learning.models import Assignment, Submission
 from apps.reports.models import ReportCard
 from apps.tenancy.models import School
 from apps.timetabling.models import Room, Timetable, TimetableEntry, TimetablePeriod
@@ -46,3 +48,7 @@ def test_seed_demo_is_idempotent():
     assert Invoice.objects.for_school(green_hills).count() == 1
     assert Payment.objects.for_school(green_hills).count() == 1
     assert Receipt.objects.for_school(green_hills).count() == 1
+    assert Assignment.objects.for_school(green_hills).count() == 1
+    assert Submission.objects.for_school(green_hills).count() == 1
+    assert Announcement.objects.for_school(green_hills).count() == 1
+    assert Notification.objects.for_school(green_hills).count() == 1

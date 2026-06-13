@@ -54,6 +54,8 @@ Milestone 4 and 5 review pages:
 - `http://green-hills.localhost:8000/assessments/`
 - `http://green-hills.localhost:8000/reports/`
 - `http://green-hills.localhost:8000/finance/`
+- `http://green-hills.localhost:8000/learning/`
+- `http://green-hills.localhost:8000/communication/`
 
 To develop against a native PostgreSQL installation, set
 `LOCAL_USE_SQLITE=False` and provide `DATABASE_URL` in `.env`. Redis and Celery

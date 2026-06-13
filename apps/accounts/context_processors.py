@@ -111,4 +111,17 @@ def school_module_access(request):
             "parent",
             "learner",
         ),
+        "can_view_learning": has_school_role(
+            user,
+            school,
+            "school_admin",
+            "principal",
+            "deputy_principal",
+            "teacher",
+            "class_teacher",
+            "department_head",
+            "parent",
+            "learner",
+        ),
+        "can_view_communication": bool(school and user.is_authenticated),
     }
