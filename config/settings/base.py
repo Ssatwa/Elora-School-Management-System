@@ -25,6 +25,9 @@ INSTALLED_APPS = [
     "apps.tenancy",
     "apps.accounts",
     "apps.analytics",
+    "apps.academics",
+    "apps.staff",
+    "apps.learners",
 ]
 
 MIDDLEWARE = [
