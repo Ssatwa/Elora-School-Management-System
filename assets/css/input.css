@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@source "../../templates";
+@source "../../apps";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-elora-blue: #1d4ed8;
+  --color-elora-teal: #0f766e;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-blue-600;
+  }
+}

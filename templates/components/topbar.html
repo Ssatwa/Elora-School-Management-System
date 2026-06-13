@@ -1,0 +1,14 @@
+<header class="flex h-20 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+  <button
+    type="button"
+    class="rounded-lg border border-slate-300 px-3 py-2 lg:hidden"
+    @click="sidebarOpen = !sidebarOpen"
+    aria-label="Toggle navigation"
+  >
+    Menu
+  </button>
+  <div>
+    <p class="text-sm font-semibold">{{ request.school.name|default:"Elora Platform" }}</p>
+    <p class="text-xs text-slate-500">{{ request.user.email }}</p>
+  </div>
+</header>

@@ -1,0 +1,2 @@
+class SchoolContextRequired(ValueError):
+    pass
