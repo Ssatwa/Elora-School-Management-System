@@ -18,6 +18,14 @@ from apps.academics.models import (
 )
 from apps.accounts.models import Membership, Role, User
 from apps.accounts.roles import ROLE_DEFINITIONS
+from apps.assessments.models import (
+    Assessment,
+    AssessmentResult,
+    CriterionRating,
+    RatingLevel,
+    Rubric,
+    RubricCriterion,
+)
 from apps.attendance.models import (
     AbsenceAlert,
     AttendanceRegister,
@@ -30,6 +38,12 @@ from apps.learners.models import (
     Learner,
     LearnerGuardian,
     MedicalRecord,
+)
+from apps.reports.models import ReportCard
+from apps.reports.services import (
+    create_report_snapshot,
+    generate_report_pdf,
+    publish_report,
 )
 from apps.staff.models import Department, StaffAssignment, TeacherProfile
 from apps.tenancy.models import School, SchoolDomain
@@ -418,4 +432,90 @@ class Command(BaseCommand):
                     "teacher": teacher,
                     "room": room,
                 },
+            )
+
+        ratings = {}
+        for code, name, rank in (
+            ("EE", "Exceeding Expectation", 4),
+            ("ME", "Meeting Expectation", 3),
+            ("AE", "Approaching Expectation", 2),
+            ("BE", "Below Expectation", 1),
+        ):
+            ratings[code], _ = RatingLevel.objects.update_or_create(
+                school=school,
+                code=code,
+                defaults={"name": name, "rank": rank, "is_active": True},
+            )
+        rubric, _ = Rubric.objects.update_or_create(
+            school=school,
+            learning_area=learning_areas["MATH"],
+            grade=grades["G7"][0],
+            name="Whole Numbers CBC Rubric",
+            defaults={
+                "description": "Measures representation and comparison of whole numbers.",
+                "is_active": True,
+            },
+        )
+        criterion, _ = RubricCriterion.objects.update_or_create(
+            school=school,
+            rubric=rubric,
+            outcome=outcome,
+            defaults={
+                "name": "Represents and compares whole numbers",
+                "description": "Uses place value accurately in authentic contexts.",
+                "sequence": 1,
+            },
+        )
+        assessment, _ = Assessment.objects.update_or_create(
+            school=school,
+            term=terms[2],
+            stream=grades["G7"][1],
+            learning_area=learning_areas["MATH"],
+            title="Whole Numbers Performance Task",
+            defaults={
+                "teacher": teacher_profiles["teacher"],
+                "rubric": rubric,
+                "assessment_type": Assessment.AssessmentType.FORMATIVE,
+                "assessment_date": date(2026, 6, 10),
+                "instructions": "Use place value to solve the market-day challenge.",
+                "status": Assessment.Status.APPROVED,
+                "submitted_at": timezone.now(),
+                "moderated_at": timezone.now(),
+                "approved_at": timezone.now(),
+            },
+        )
+        result, _ = AssessmentResult.objects.update_or_create(
+            school=school,
+            assessment=assessment,
+            learner=learner,
+            defaults={
+                "overall_rating": ratings["ME"],
+                "teacher_comment": "Amina applies place value confidently.",
+                "moderated_comment": "Evidence aligns with the learning outcome.",
+                "is_complete": True,
+            },
+        )
+        CriterionRating.objects.update_or_create(
+            school=school,
+            result=result,
+            criterion=criterion,
+            defaults={
+                "rating": ratings["ME"],
+                "comment": "Accurate representations with clear reasoning.",
+            },
+        )
+        report = create_report_snapshot(
+            school=school,
+            actor=memberships["principal"].user,
+            learner=learner,
+            term=terms[2],
+            principal_remark="Amina is making steady progress. Keep aiming higher.",
+        )
+        generate_report_pdf(report_id=report.id, school_id=school.id)
+        report.refresh_from_db()
+        if report.status == ReportCard.Status.READY:
+            publish_report(
+                school=school,
+                actor=memberships["principal"].user,
+                report=report,
             )

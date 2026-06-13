@@ -39,5 +39,15 @@
         Timetables
       </a>
     {% endif %}
+    {% if can_view_assessments %}
+      <a class="block rounded-xl px-4 py-3 font-medium text-slate-300 hover:bg-white/10 hover:text-white" href="/assessments/">
+        Assessments
+      </a>
+    {% endif %}
+    {% if can_view_reports %}
+      <a class="block rounded-xl px-4 py-3 font-medium text-slate-300 hover:bg-white/10 hover:text-white" href="/reports/">
+        Report cards
+      </a>
+    {% endif %}
   </nav>
 </aside>

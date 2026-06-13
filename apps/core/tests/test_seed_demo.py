@@ -2,7 +2,9 @@ import pytest
 from django.core.management import call_command
 
 from apps.accounts.models import Membership, User
+from apps.assessments.models import Assessment, AssessmentResult, RatingLevel
 from apps.attendance.models import AttendanceRegister, LearnerAttendanceEntry
+from apps.reports.models import ReportCard
 from apps.tenancy.models import School
 from apps.timetabling.models import Room, Timetable, TimetableEntry, TimetablePeriod
 
@@ -30,3 +32,13 @@ def test_seed_demo_is_idempotent():
         status=Timetable.Status.PUBLISHED
     ).count() == 1
     assert TimetableEntry.objects.for_school(green_hills).count() == 2
+    assert RatingLevel.objects.for_school(green_hills).count() == 4
+    assert Assessment.objects.for_school(green_hills).filter(
+        status=Assessment.Status.APPROVED
+    ).count() == 1
+    assert AssessmentResult.objects.for_school(green_hills).filter(
+        is_complete=True
+    ).count() == 1
+    assert ReportCard.objects.for_school(green_hills).filter(
+        status=ReportCard.Status.PUBLISHED
+    ).count() == 1
