@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date, time, timedelta
 from decimal import Decimal
 
 from django.conf import settings
@@ -33,6 +33,7 @@ from apps.attendance.models import (
     LearnerAttendanceEntry,
     StaffAttendanceEntry,
 )
+from apps.communication.models import Announcement, Message, Notification
 from apps.finance.models import FeeStructure, Invoice, Payment, PaymentAllocation, Receipt
 from apps.learners.models import (
     Enrollment,
@@ -41,6 +42,7 @@ from apps.learners.models import (
     LearnerGuardian,
     MedicalRecord,
 )
+from apps.learning.models import Assignment, Resource, Submission
 from apps.reports.models import ReportCard
 from apps.reports.services import (
     create_report_snapshot,
@@ -571,4 +573,65 @@ class Command(BaseCommand):
                 "amount": Decimal("10000.00"),
                 "issued_by": memberships["accountant"].user,
             },
+        )
+
+        assignment, _ = Assignment.objects.update_or_create(
+            school=school,
+            teacher=teacher_profiles["teacher"],
+            term=terms[2],
+            stream=grades["G7"][1],
+            learning_area=learning_areas["MATH"],
+            title="Number Patterns Home Challenge",
+            defaults={
+                "instructions": "Complete the number-pattern investigation and explain your rule.",
+                "due_at": timezone.now() + timedelta(days=7),
+                "is_published": True,
+                "published_at": timezone.now(),
+            },
+        )
+        Submission.objects.update_or_create(
+            school=school,
+            assignment=assignment,
+            learner=learner,
+            defaults={
+                "response": "I found the rule by comparing the difference between terms.",
+                "feedback": "Clear reasoning. Add one more example.",
+            },
+        )
+        Resource.objects.update_or_create(
+            school=school,
+            teacher=teacher_profiles["teacher"],
+            learning_area=learning_areas["MATH"],
+            title="Understanding Number Patterns",
+            defaults={
+                "kind": Resource.Kind.NOTE,
+                "content": "A concise guide to identifying and explaining number patterns.",
+                "is_published": True,
+            },
+        )
+        announcement, _ = Announcement.objects.update_or_create(
+            school=school,
+            title="Family Learning Afternoon",
+            defaults={
+                "body": "Parents and guardians are invited on Friday at 2 PM.",
+                "published_by": memberships["teacher"].user,
+                "published_at": timezone.now(),
+            },
+        )
+        Notification.objects.update_or_create(
+            school=school,
+            user=memberships["parent"].user,
+            announcement=announcement,
+            defaults={
+                "title": announcement.title,
+                "body": announcement.body,
+                "delivery_status": "delivered",
+            },
+        )
+        Message.objects.update_or_create(
+            school=school,
+            sender=memberships["teacher"].user,
+            recipient=memberships["parent"].user,
+            subject="Amina's mathematics progress",
+            defaults={"body": "Amina is participating confidently in number work."},
         )
