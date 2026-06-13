@@ -1,0 +1,8 @@
+{% extends "layouts/app.html" %}
+{% block title %}Receipt | Elora{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+  <p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Official receipt</p><h1 class="mt-2 text-3xl font-bold">{{ receipt.receipt_number }}</h1>
+  <dl class="mt-8 grid gap-5 sm:grid-cols-2"><div><dt class="text-sm text-slate-500">Learner</dt><dd class="font-semibold">{{ receipt.allocation.invoice.learner.full_name }}</dd></div><div><dt class="text-sm text-slate-500">Amount</dt><dd class="font-semibold">KES {{ receipt.amount }}</dd></div><div><dt class="text-sm text-slate-500">Payment</dt><dd>{{ receipt.allocation.payment.payment_number }}</dd></div><div><dt class="text-sm text-slate-500">Invoice</dt><dd>{{ receipt.allocation.invoice.invoice_number }}</dd></div></dl>
+</div>
+{% endblock %}

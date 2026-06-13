@@ -102,4 +102,13 @@ def school_module_access(request):
             "department_head",
             "parent",
         ),
+        "can_view_finance": has_school_role(
+            user,
+            school,
+            "school_admin",
+            "principal",
+            "accountant",
+            "parent",
+            "learner",
+        ),
     }
