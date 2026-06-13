@@ -7,8 +7,17 @@
   <meta name="htmx-config" content='{"historyCacheSize": 0}'>
   <title>{% block title %}Elora{% endblock %}</title>
   <script>
+    // Production CSP must authorize this bootstrap with a nonce or hash.
     (() => {
-      const savedTheme = localStorage.getItem("elora-theme");
+      function readStoredTheme() {
+        try {
+          return localStorage.getItem("elora-theme");
+        } catch {
+          return null;
+        }
+      }
+
+      const savedTheme = readStoredTheme();
       document.documentElement.dataset.theme = savedTheme === "dark" ? "dark" : "light";
     })();
   </script>
@@ -17,8 +26,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <script defer src="https://unpkg.com/htmx.org@2.0.8"></script>
-  <script defer src="https://unpkg.com/alpinejs@3.15.2/dist/cdn.min.js"></script>
   <script defer src="{% static 'js/app.js' %}"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.15.2/dist/cdn.min.js"></script>
 </head>
 <body>
   <a class="sr-only focus:not-sr-only" href="#main-content">Skip to content</a>

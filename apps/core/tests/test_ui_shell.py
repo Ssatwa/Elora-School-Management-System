@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -33,3 +35,20 @@ def test_authenticated_pages_render_premium_shell(client):
     assert "data-theme-toggle" in content
     assert 'aria-controls="primary-navigation"' in content
     assert 'id="main-content"' in content
+    assert content.index("/static/js/app.js") < content.index("alpinejs")
+
+
+def test_shell_javascript_registers_alpine_state_with_safe_storage():
+    content = Path("static/js/app.js").read_text()
+
+    assert 'Alpine.data("eloraShell"' in content
+    assert "safeStorage.get(" in content
+    assert "safeStorage.set(" in content
+
+
+def test_theme_bootstrap_guards_storage_access():
+    content = Path("templates/layouts/app.html").read_text()
+
+    assert "function readStoredTheme()" in content
+    assert "try {" in content
+    assert "catch" in content

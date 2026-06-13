@@ -1,11 +1,28 @@
+const safeStorage = {
+  get(key, fallback = null) {
+    try {
+      return localStorage.getItem(key) ?? fallback;
+    } catch {
+      return fallback;
+    }
+  },
+  set(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Storage can be unavailable in privacy-restricted browsing contexts.
+    }
+  },
+};
+
 document.addEventListener("alpine:init", () => {
   Alpine.data("eloraShell", () => ({
     sidebarOpen: false,
-    sidebarCollapsed: localStorage.getItem("elora-sidebar") === "collapsed",
+    sidebarCollapsed: safeStorage.get("elora-sidebar") === "collapsed",
     theme: document.documentElement.dataset.theme || "light",
     toggleSidebar() {
       this.sidebarCollapsed = !this.sidebarCollapsed;
-      localStorage.setItem(
+      safeStorage.set(
         "elora-sidebar",
         this.sidebarCollapsed ? "collapsed" : "expanded",
       );
@@ -13,7 +30,7 @@ document.addEventListener("alpine:init", () => {
     toggleTheme() {
       this.theme = this.theme === "dark" ? "light" : "dark";
       document.documentElement.dataset.theme = this.theme;
-      localStorage.setItem("elora-theme", this.theme);
+      safeStorage.set("elora-theme", this.theme);
       window.dispatchEvent(new CustomEvent("elora:theme-change"));
     },
   }));
