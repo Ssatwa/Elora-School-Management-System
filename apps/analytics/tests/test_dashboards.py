@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from apps.accounts.models import Membership, Role
+from apps.core.management.commands.seed_demo import DEMO_PASSWORD
 from apps.tenancy.models import School, SchoolDomain
 
 
@@ -69,3 +70,26 @@ def test_sidebar_only_shows_modules_authorized_for_role(client):
     assert "Learners" in content
     assert "Academic structure" not in content
     assert ">Staff<" not in content
+
+
+@pytest.mark.django_db
+def test_seeded_school_dashboard_shows_live_metrics_and_chart(client, settings):
+    from django.core.management import call_command
+
+    settings.ALLOW_DEMO_SEED = True
+    call_command("seed_demo")
+    user = get_user_model().objects.get(email="school_admin@green-hills.localhost")
+    assert user.check_password(DEMO_PASSWORD)
+    client.force_login(user)
+
+    response = client.get(
+        reverse("analytics:dashboard"),
+        HTTP_HOST="green-hills.localhost",
+    )
+
+    content = response.content.decode()
+    assert response.status_code == 200
+    assert "Total learners" in content
+    assert "Fee collection" in content
+    assert "dashboardChart" in content
+    assert "Your workspace is ready" not in content

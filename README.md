@@ -117,3 +117,4 @@ memberships carry one or more stable role codes.
 - People and academic operations: `docs/operations/people-academics.md`
 - Attendance and timetabling operations:
   `docs/operations/attendance-timetabling.md`
+- Production readiness: `docs/operations/production-readiness.md`
