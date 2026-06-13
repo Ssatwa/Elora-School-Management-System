@@ -49,6 +49,12 @@ Milestone 3 review pages:
 - `http://green-hills.localhost:8000/timetables/`
 - `http://green-hills.localhost:8000/timetables/mine/`
 
+Milestone 4 and 5 review pages:
+
+- `http://green-hills.localhost:8000/assessments/`
+- `http://green-hills.localhost:8000/reports/`
+- `http://green-hills.localhost:8000/finance/`
+
 To develop against a native PostgreSQL installation, set
 `LOCAL_USE_SQLITE=False` and provide `DATABASE_URL` in `.env`. Redis and Celery
 workers remain optional in local settings; staging and production use the full

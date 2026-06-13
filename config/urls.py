@@ -12,5 +12,6 @@ urlpatterns = [
     path("timetables/", include("apps.timetabling.urls")),
     path("assessments/", include("apps.assessments.urls")),
     path("reports/", include("apps.reports.urls")),
+    path("finance/", include("apps.finance.urls")),
     path("admin/", admin.site.urls),
 ]

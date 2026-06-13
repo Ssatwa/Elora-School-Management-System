@@ -88,6 +88,19 @@ def test_milestone_four_rls_migration_covers_every_tenant_table():
     assert "FORCE ROW LEVEL SECURITY" in migration
 
 
+def test_milestone_five_rls_migration_covers_every_finance_table():
+    migration = Path("apps/tenancy/migrations/0006_milestone_5_rls.py").read_text()
+    for table in {
+        "finance_feestructure",
+        "finance_invoice",
+        "finance_payment",
+        "finance_paymentallocation",
+        "finance_receipt",
+    }:
+        assert table in migration
+    assert "FORCE ROW LEVEL SECURITY" in migration
+
+
 @pytest.mark.django_db(transaction=True)
 def test_rls_blocks_cross_school_memberships():
     if connection.vendor != "postgresql":

@@ -1,4 +1,5 @@
 from datetime import date, time
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -32,6 +33,7 @@ from apps.attendance.models import (
     LearnerAttendanceEntry,
     StaffAttendanceEntry,
 )
+from apps.finance.models import FeeStructure, Invoice, Payment, PaymentAllocation, Receipt
 from apps.learners.models import (
     Enrollment,
     Guardian,
@@ -519,3 +521,54 @@ class Command(BaseCommand):
                 actor=memberships["principal"].user,
                 report=report,
             )
+
+        FeeStructure.objects.update_or_create(
+            school=school,
+            term=terms[2],
+            grade=grades["G7"][0],
+            name="Term 2 Tuition and Activities",
+            defaults={"amount": Decimal("25000.00"), "is_active": True},
+        )
+        invoice, _ = Invoice.objects.update_or_create(
+            school=school,
+            invoice_number=f"INV-{school.slug.upper()[:4]}-000001",
+            defaults={
+                "learner": learner,
+                "term": terms[2],
+                "description": "Term 2 Tuition and Activities",
+                "amount": Decimal("25000.00"),
+                "due_date": date(2026, 5, 31),
+                "status": Invoice.Status.PART_PAID,
+                "created_by": memberships["accountant"].user,
+            },
+        )
+        payment, _ = Payment.objects.update_or_create(
+            school=school,
+            payment_number=f"PAY-{school.slug.upper()[:4]}-000001",
+            defaults={
+                "learner": learner,
+                "amount": Decimal("10000.00"),
+                "method": Payment.Method.BANK,
+                "reference": f"{school.slug.upper()}-BANK-001",
+                "paid_on": date(2026, 5, 15),
+                "received_by": memberships["accountant"].user,
+            },
+        )
+        allocation, _ = PaymentAllocation.objects.update_or_create(
+            school=school,
+            payment=payment,
+            invoice=invoice,
+            defaults={
+                "amount": Decimal("10000.00"),
+                "allocated_by": memberships["accountant"].user,
+            },
+        )
+        Receipt.objects.update_or_create(
+            school=school,
+            receipt_number=f"RCT-{school.slug.upper()[:4]}-000001",
+            defaults={
+                "allocation": allocation,
+                "amount": Decimal("10000.00"),
+                "issued_by": memberships["accountant"].user,
+            },
+        )

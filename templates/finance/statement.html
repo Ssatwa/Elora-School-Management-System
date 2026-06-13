@@ -1,0 +1,9 @@
+{% extends "layouts/app.html" %}
+{% block title %}Statement | Elora{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div><a href="{% url 'finance:index' %}" class="text-sm font-semibold text-blue-600">Back to finance</a><h1 class="mt-2 text-3xl font-bold">{{ learner.full_name }}</h1><p class="text-slate-500">{{ learner.admission_number }} · Fee statement</p></div>
+  <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><h2 class="text-lg font-semibold">Invoices</h2><div class="mt-4 space-y-3">{% for invoice in invoices %}<div class="flex flex-wrap justify-between gap-3 rounded-xl bg-slate-50 p-4"><div><p class="font-semibold">{{ invoice.description }}</p><p class="text-sm text-slate-500">{{ invoice.invoice_number }} · due {{ invoice.due_date }}</p></div><div class="text-right"><p class="font-semibold">KES {{ invoice.amount }}</p><p class="text-sm text-amber-700">Balance KES {{ invoice.balance }}</p></div></div>{% empty %}<p class="text-sm text-slate-500">No invoices.</p>{% endfor %}</div></section>
+  <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><h2 class="text-lg font-semibold">Payments</h2><div class="mt-4 space-y-3">{% for payment in payments %}<div class="flex justify-between rounded-xl bg-emerald-50 p-4"><div><p class="font-semibold">{{ payment.payment_number }}</p><p class="text-sm text-slate-500">{{ payment.get_method_display }} · {{ payment.reference }}</p></div><p class="font-semibold text-emerald-700">KES {{ payment.amount }}</p></div>{% empty %}<p class="text-sm text-slate-500">No payments.</p>{% endfor %}</div></section>
+</div>
+{% endblock %}

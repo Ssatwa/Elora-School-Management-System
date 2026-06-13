@@ -1,0 +1,24 @@
+{% extends "layouts/app.html" %}
+{% block title %}Finance | Elora{% endblock %}
+{% block content %}
+<div class="space-y-6">
+  <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Fees and payments</p><h1 class="mt-1 text-3xl font-bold text-slate-950">Finance operations</h1><p class="mt-2 text-slate-600">Auditable invoices, payments, receipts, balances and family statements.</p></div>
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Invoiced</p><p class="mt-2 text-3xl font-bold">KES {{ summary.invoiced }}</p></div>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Payments</p><p class="mt-2 text-3xl font-bold text-emerald-600">KES {{ summary.paid }}</p></div>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Outstanding</p><p class="mt-2 text-3xl font-bold text-amber-600">KES {{ summary.balance }}</p></div>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Open invoices</p><p class="mt-2 text-3xl font-bold">{{ summary.open_invoices }}</p></div>
+  </div>
+  <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 p-5"><h2 class="text-lg font-semibold">Learner accounts</h2><p class="text-sm text-slate-500">Open a complete fee statement and receipt history.</p></div>
+    <div class="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3">
+      {% for learner in learners %}<a href="{% url 'finance:statement' learner.id %}" class="rounded-xl border border-slate-200 p-4 hover:border-blue-300 hover:bg-blue-50"><p class="font-semibold">{{ learner.full_name }}</p><p class="text-sm text-slate-500">{{ learner.admission_number }}</p></a>
+      {% empty %}<p class="text-sm text-slate-500">No learner accounts are available.</p>{% endfor %}
+    </div>
+  </section>
+  <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 p-5"><h2 class="text-lg font-semibold">Recent invoices</h2></div>
+    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-slate-200 text-sm"><thead class="bg-slate-50 text-left text-xs uppercase text-slate-500"><tr><th class="px-5 py-3">Invoice</th><th class="px-5 py-3">Learner</th><th class="px-5 py-3">Term</th><th class="px-5 py-3">Amount</th><th class="px-5 py-3">Balance</th><th class="px-5 py-3">Status</th></tr></thead><tbody class="divide-y divide-slate-100">{% for invoice in invoices %}<tr><td class="px-5 py-4 font-semibold">{{ invoice.invoice_number }}</td><td class="px-5 py-4">{{ invoice.learner.full_name }}</td><td class="px-5 py-4">{{ invoice.term }}</td><td class="px-5 py-4">KES {{ invoice.amount }}</td><td class="px-5 py-4">KES {{ invoice.balance }}</td><td class="px-5 py-4">{{ invoice.get_status_display }}</td></tr>{% empty %}<tr><td colspan="6" class="px-5 py-8 text-center text-slate-500">No invoices recorded.</td></tr>{% endfor %}</tbody></table></div>
+  </section>
+</div>
+{% endblock %}
