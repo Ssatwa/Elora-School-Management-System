@@ -2,14 +2,17 @@ import pytest
 from django.core.management import call_command
 
 from apps.accounts.models import Membership, User
+from apps.activities.models import ActivityParticipation, Club
 from apps.assessments.models import Assessment, AssessmentResult, RatingLevel
 from apps.attendance.models import AttendanceRegister, LearnerAttendanceEntry
 from apps.communication.models import Announcement, Notification
 from apps.finance.models import Invoice, Payment, Receipt
 from apps.learning.models import Assignment, Submission
+from apps.library.models import BorrowRecord, LibraryBook
 from apps.reports.models import ReportCard
 from apps.tenancy.models import School
 from apps.timetabling.models import Room, Timetable, TimetableEntry, TimetablePeriod
+from apps.wellbeing.models import DisciplineRecord
 
 
 @pytest.mark.django_db
@@ -52,3 +55,8 @@ def test_seed_demo_is_idempotent():
     assert Submission.objects.for_school(green_hills).count() == 1
     assert Announcement.objects.for_school(green_hills).count() == 1
     assert Notification.objects.for_school(green_hills).count() == 1
+    assert LibraryBook.objects.for_school(green_hills).count() == 1
+    assert BorrowRecord.objects.for_school(green_hills).count() == 1
+    assert DisciplineRecord.objects.for_school(green_hills).count() == 1
+    assert Club.objects.for_school(green_hills).count() == 1
+    assert ActivityParticipation.objects.for_school(green_hills).count() == 1

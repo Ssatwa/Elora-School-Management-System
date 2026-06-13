@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     "apps.finance",
     "apps.learning",
     "apps.communication",
+    "apps.library",
+    "apps.wellbeing",
+    "apps.activities",
 ]
 
 MIDDLEWARE = [

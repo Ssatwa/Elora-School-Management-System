@@ -124,4 +124,26 @@ def school_module_access(request):
             "learner",
         ),
         "can_view_communication": bool(school and user.is_authenticated),
+        "can_view_library": has_school_role(
+            user, school, "librarian", "school_admin", "principal"
+        ),
+        "can_view_wellbeing": has_school_role(
+            user,
+            school,
+            "school_admin",
+            "principal",
+            "deputy_principal",
+            "guidance_counsellor",
+            "class_teacher",
+        ),
+        "can_view_activities": has_school_role(
+            user,
+            school,
+            "school_admin",
+            "principal",
+            "deputy_principal",
+            "teacher",
+            "class_teacher",
+            "department_head",
+        ),
     }
