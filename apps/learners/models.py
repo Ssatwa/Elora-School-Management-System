@@ -24,6 +24,13 @@ class Learner(UUIDModel, TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="learners",
     )
+    membership = models.OneToOneField(
+        "accounts.Membership",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="learner_profile",
+    )
     admission_number = models.CharField(max_length=40)
     first_name = models.CharField(max_length=80)
     middle_name = models.CharField(max_length=80, blank=True)
@@ -57,6 +64,16 @@ class Learner(UUIDModel, TimeStampedModel):
         return " ".join(
             part for part in (self.first_name, self.middle_name, self.last_name) if part
         )
+
+    def clean(self):
+        super().clean()
+        membership = self.membership
+        if (
+            self.membership_id
+            and membership is not None
+            and self.school_id != membership.school_id
+        ):
+            raise ValidationError({"membership": "Membership must belong to the same school."})
 
     def __str__(self):
         return f"{self.admission_number} - {self.full_name}"

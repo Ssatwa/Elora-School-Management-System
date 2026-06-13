@@ -12,6 +12,7 @@ ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
     default=["localhost", ".localhost", "127.0.0.1", "testserver"],
 )
+ALLOW_DEMO_SEED = env.bool("ALLOW_DEMO_SEED", default=False)
 
 INSTALLED_APPS = [
     "django.contrib.admin",

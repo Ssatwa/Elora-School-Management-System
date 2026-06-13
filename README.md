@@ -31,6 +31,15 @@ npm run css:build
 Open `http://green-hills.localhost:8000/accounts/login/`.
 School demo accounts use `<role>@green-hills.localhost` and password
 `EloraDemo123!`. The platform account is `super_admin@elora.local`.
+The same role accounts are available for Sunrise Academy at
+`<role>@sunrise.localhost`.
+
+Milestone 2 review pages:
+
+- `http://green-hills.localhost:8000/academics/`
+- `http://green-hills.localhost:8000/staff/`
+- `http://green-hills.localhost:8000/learners/`
+- `http://green-hills.localhost:8000/learners/admit/`
 
 To develop against a native PostgreSQL installation, set
 `LOCAL_USE_SQLITE=False` and provide `DATABASE_URL` in `.env`. Redis and Celery
@@ -86,3 +95,4 @@ memberships carry one or more stable role codes.
 - School provisioning: `docs/operations/school-provisioning.md`
 - Backup and restore: `docs/operations/backup-restore.md`
 - Native Windows development: `docs/operations/native-windows-development.md`
+- People and academic operations: `docs/operations/people-academics.md`

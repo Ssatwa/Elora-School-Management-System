@@ -5,9 +5,10 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
+from apps.accounts.models import Membership
 from apps.learners.models import Guardian, Learner, LearnerGuardian, MedicalRecord
 from apps.tenancy.models import School
-from tests.factories import SchoolFactory
+from tests.factories import MembershipFactory, SchoolFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -40,6 +41,28 @@ def test_admission_number_is_unique_per_school():
 
     with pytest.raises(IntegrityError):
         create_learner(school)
+
+
+def test_learner_portal_membership_must_belong_to_same_school():
+    first_school = cast(School, SchoolFactory())
+    second_school = cast(School, SchoolFactory())
+    membership = cast(
+        Membership,
+        MembershipFactory(school=first_school, role_code="learner"),
+    )
+    learner = Learner(
+        school=second_school,
+        membership=membership,
+        admission_number="2026-0001",
+        first_name="Amina",
+        last_name="Kamau",
+        date_of_birth=date(2013, 6, 12),
+        gender=Learner.Gender.FEMALE,
+        admission_date=date(2026, 1, 6),
+    )
+
+    with pytest.raises(ValidationError, match="same school"):
+        learner.full_clean()
 
 
 def test_guardian_link_requires_same_school():
