@@ -1,4 +1,5 @@
 from datetime import date
+from typing import cast
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -13,6 +14,7 @@ from apps.attendance.models import (
 )
 from apps.learners.models import Learner
 from apps.staff.models import TeacherProfile
+from apps.tenancy.models import School
 from tests.factories import MembershipFactory, SchoolFactory
 
 pytestmark = pytest.mark.django_db
@@ -57,8 +59,8 @@ def make_teacher(school, employee_number="T-001"):
 
 
 def test_learner_register_requires_stream_from_same_school():
-    first = SchoolFactory()
-    second = SchoolFactory(slug="second-attendance")
+    first = cast(School, SchoolFactory())
+    second = cast(School, SchoolFactory(slug="second-attendance"))
     register = AttendanceRegister(
         school=first,
         attendance_date=date(2026, 6, 13),
@@ -72,7 +74,7 @@ def test_learner_register_requires_stream_from_same_school():
 
 
 def test_register_target_rules_require_stream_only_for_learner_registers():
-    school = SchoolFactory()
+    school = cast(School, SchoolFactory())
 
     learner_register = AttendanceRegister(
         school=school,
@@ -95,7 +97,7 @@ def test_register_target_rules_require_stream_only_for_learner_registers():
 
 
 def test_duplicate_learner_register_is_prevented():
-    school = SchoolFactory()
+    school = cast(School, SchoolFactory())
     stream = make_stream(school)
     values = {
         "school": school,
@@ -111,8 +113,8 @@ def test_duplicate_learner_register_is_prevented():
 
 
 def test_entry_requires_target_from_register_school_and_matching_register_type():
-    first = SchoolFactory()
-    second = SchoolFactory(slug="second-entry")
+    first = cast(School, SchoolFactory())
+    second = cast(School, SchoolFactory(slug="second-entry"))
     register = AttendanceRegister.objects.create(
         school=first,
         attendance_date=date(2026, 6, 13),
@@ -140,7 +142,7 @@ def test_entry_requires_target_from_register_school_and_matching_register_type()
 
 
 def test_duplicate_entry_per_register_is_prevented():
-    school = SchoolFactory()
+    school = cast(School, SchoolFactory())
     learner = make_learner(school)
     register = AttendanceRegister.objects.create(
         school=school,
@@ -162,7 +164,7 @@ def test_duplicate_entry_per_register_is_prevented():
 
 
 def test_correction_requires_exactly_one_entry_and_matching_status_history():
-    school = SchoolFactory()
+    school = cast(School, SchoolFactory())
     learner_entry = LearnerAttendanceEntry.objects.create(
         school=school,
         register=AttendanceRegister.objects.create(

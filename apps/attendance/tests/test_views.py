@@ -5,8 +5,7 @@ from django.urls import reverse
 
 from apps.academics.models import AcademicYear
 from apps.attendance.models import AttendanceRegister, LearnerAttendanceEntry
-from apps.attendance.tests.test_models import make_learner, make_stream
-from apps.attendance.tests.test_models import make_teacher
+from apps.attendance.tests.test_models import make_learner, make_stream, make_teacher
 from apps.learners.models import Enrollment
 from tests.factories import MembershipFactory, SchoolFactory
 

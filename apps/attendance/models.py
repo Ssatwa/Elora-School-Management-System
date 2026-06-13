@@ -68,7 +68,8 @@ class AttendanceRegister(UUIDModel, TimeStampedModel):
     def clean(self):
         super().clean()
         errors = {}
-        if self.stream_id and self.school_id != self.stream.school_id:
+        stream = self.stream
+        if self.stream_id and stream is not None and self.school_id != stream.school_id:
             errors["stream"] = "Stream must belong to the same school."
         if self.subject_type == self.SubjectType.LEARNER and not self.stream_id:
             errors["stream"] = "Stream is required for learner registers."

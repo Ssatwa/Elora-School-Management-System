@@ -41,6 +41,14 @@ Milestone 2 review pages:
 - `http://green-hills.localhost:8000/learners/`
 - `http://green-hills.localhost:8000/learners/admit/`
 
+Milestone 3 review pages:
+
+- `http://green-hills.localhost:8000/attendance/`
+- `http://green-hills.localhost:8000/attendance/register/learners/`
+- `http://green-hills.localhost:8000/attendance/register/staff/`
+- `http://green-hills.localhost:8000/timetables/`
+- `http://green-hills.localhost:8000/timetables/mine/`
+
 To develop against a native PostgreSQL installation, set
 `LOCAL_USE_SQLITE=False` and provide `DATABASE_URL` in `.env`. Redis and Celery
 workers remain optional in local settings; staging and production use the full
@@ -96,3 +104,5 @@ memberships carry one or more stable role codes.
 - Backup and restore: `docs/operations/backup-restore.md`
 - Native Windows development: `docs/operations/native-windows-development.md`
 - People and academic operations: `docs/operations/people-academics.md`
+- Attendance and timetabling operations:
+  `docs/operations/attendance-timetabling.md`

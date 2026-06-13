@@ -18,12 +18,12 @@ from apps.attendance.services import (
     mark_learner_attendance,
     mark_staff_attendance,
 )
-from apps.learners.models import Enrollment
 from apps.attendance.tests.test_models import (
     make_learner,
     make_stream,
     make_teacher,
 )
+from apps.learners.models import Enrollment
 from tests.factories import SchoolFactory, UserFactory
 
 pytestmark = pytest.mark.django_db

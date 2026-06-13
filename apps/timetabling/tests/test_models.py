@@ -1,11 +1,18 @@
 from datetime import date, time
+from typing import cast
 
 import pytest
 from django.core.exceptions import ValidationError
 
 from apps.academics.models import AcademicYear, LearningArea, Term
 from apps.attendance.tests.test_models import make_stream, make_teacher
-from apps.timetabling.models import Room, Timetable, TimetableEntry, TimetablePeriod
+from apps.tenancy.models import School
+from apps.timetabling.models import (
+    Room,
+    Timetable,
+    TimetableEntry,
+    TimetablePeriod,
+)
 from tests.factories import SchoolFactory
 
 pytestmark = pytest.mark.django_db
@@ -42,7 +49,7 @@ def make_period(school, sequence=1):
 
 
 def test_period_requires_end_time_after_start_time():
-    school = SchoolFactory()
+    school = cast(School, SchoolFactory())
     period = TimetablePeriod(
         school=school,
         weekday=TimetablePeriod.Weekday.MONDAY,
@@ -57,8 +64,8 @@ def test_period_requires_end_time_after_start_time():
 
 
 def test_timetable_term_and_year_must_belong_to_same_school_and_match():
-    first = SchoolFactory()
-    second = SchoolFactory(slug="second-timetable")
+    first = cast(School, SchoolFactory())
+    second = cast(School, SchoolFactory(slug="second-timetable"))
     year, _ = make_calendar(first)
     _, other_term = make_calendar(second)
     timetable = Timetable(
@@ -73,8 +80,8 @@ def test_timetable_term_and_year_must_belong_to_same_school_and_match():
 
 
 def test_entry_requires_all_references_from_timetable_school():
-    first = SchoolFactory()
-    second = SchoolFactory(slug="second-entry-timetable")
+    first = cast(School, SchoolFactory())
+    second = cast(School, SchoolFactory(slug="second-entry-timetable"))
     year, term = make_calendar(first)
     timetable = Timetable.objects.create(
         school=first,
