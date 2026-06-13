@@ -1,0 +1,10 @@
+<div class="overflow-x-auto" data-attendance-registers="true">
+  <table class="min-w-full divide-y divide-slate-200 text-sm">
+    <thead class="bg-slate-50 text-left text-xs uppercase tracking-wider text-slate-500"><tr><th class="px-5 py-3">Date</th><th class="px-5 py-3">Session</th><th class="px-5 py-3">Register</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Entries</th></tr></thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for register in registers %}
+        <tr><td class="px-5 py-4 font-medium">{{ register.attendance_date }}</td><td class="px-5 py-4">{{ register.get_session_display }}</td><td class="px-5 py-4">{% if register.stream %}{{ register.stream }}{% else %}Staff{% endif %}</td><td class="px-5 py-4">{{ register.get_status_display }}</td><td class="px-5 py-4">{{ register.learner_entries.count|add:register.staff_entries.count }}</td></tr>
+      {% empty %}<tr><td colspan="5" class="px-5 py-10 text-center text-slate-500">No registers recorded yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>

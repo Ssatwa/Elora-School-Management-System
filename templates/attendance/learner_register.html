@@ -1,0 +1,30 @@
+{% extends "layouts/app.html" %}
+{% block title %}Take Attendance | Elora{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-6xl space-y-6">
+  <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Learner register</p><h1 class="mt-1 text-3xl font-bold">Take attendance</h1></div>
+  <form method="get" class="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-4">
+    {{ form.as_p }}
+    <button class="self-end rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white">Load class</button>
+  </form>
+  {% if enrollments %}
+    <form method="post" class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {% csrf_token %}
+      <input type="hidden" name="attendance_date" value="{{ form.cleaned_data.attendance_date|date:'Y-m-d' }}">
+      <input type="hidden" name="session" value="{{ form.cleaned_data.session }}">
+      <input type="hidden" name="stream" value="{{ form.cleaned_data.stream.id }}">
+      <div class="overflow-x-auto"><table class="min-w-full divide-y divide-slate-200 text-sm">
+        <thead class="bg-slate-50 text-left"><tr><th class="px-5 py-3">Learner</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Note</th></tr></thead>
+        <tbody class="divide-y divide-slate-100">
+        {% for enrollment in enrollments %}
+          <tr><td class="px-5 py-4"><span class="font-medium">{{ enrollment.learner.full_name }}</span><br><span class="text-xs text-slate-500">{{ enrollment.learner.admission_number }}</span></td>
+          <td class="px-5 py-4"><select name="status_{{ enrollment.learner.id }}" class="rounded-lg border border-slate-300 px-3 py-2"><option value="present">Present</option><option value="absent">Absent</option><option value="late">Late</option><option value="excused">Excused</option></select></td>
+          <td class="px-5 py-4"><input name="note_{{ enrollment.learner.id }}" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="Optional note"></td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+      <div class="flex justify-end border-t border-slate-200 p-5"><button class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white">Complete register</button></div>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}
