@@ -8,10 +8,14 @@ defense-in-depth PostgreSQL tenant isolation.
 
 - Python 3.13
 - Node.js 24
-- Docker Desktop
 - Git
+- Docker Desktop is optional and requires hardware virtualization
 
-## Local Setup
+## Native Windows Setup
+
+This is the recommended development path when Docker Desktop is unavailable.
+It uses SQLite, Django's in-memory cache, and eager Celery tasks, so PostgreSQL,
+Redis, and a separate Celery worker are not required locally.
 
 ```powershell
 py -3.13 -m venv .venv
@@ -28,12 +32,17 @@ Open `http://green-hills.localhost:8000/accounts/login/`.
 School demo accounts use `<role>@green-hills.localhost` and password
 `EloraDemo123!`. The platform account is `super_admin@elora.local`.
 
+To develop against a native PostgreSQL installation, set
+`LOCAL_USE_SQLITE=False` and provide `DATABASE_URL` in `.env`. Redis and Celery
+workers remain optional in local settings; staging and production use the full
+service stack.
+
 ## Docker Setup
 
-Start Docker Desktop, then run:
+On a virtualization-capable machine, start Docker Desktop and run:
 
 ```powershell
-Copy-Item .env.example .env
+Copy-Item .env.docker.example .env
 docker compose up --build
 ```
 
@@ -46,10 +55,15 @@ media data use named volumes.
 .\.venv\Scripts\python.exe -m pytest
 .\.venv\Scripts\python.exe manage.py makemigrations --check
 npm run css:build
-docker compose config
 ```
 
-Production verification uses:
+Docker configuration can still be validated without starting containers:
+
+```powershell
+docker compose --env-file .env.docker.example config
+```
+
+Production settings verification uses:
 
 ```powershell
 $env:DJANGO_SETTINGS_MODULE="config.settings.production"
@@ -71,3 +85,4 @@ memberships carry one or more stable role codes.
 - Delivery roadmap: `docs/superpowers/plans/2026-06-12-elora-implementation-roadmap.md`
 - School provisioning: `docs/operations/school-provisioning.md`
 - Backup and restore: `docs/operations/backup-restore.md`
+- Native Windows development: `docs/operations/native-windows-development.md`
