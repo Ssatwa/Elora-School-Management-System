@@ -1,0 +1,32 @@
+{% extends "layouts/app.html" %}
+{% block title %}Academic Structure | Elora{% endblock %}
+{% block content %}
+<header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <p class="text-sm font-semibold text-blue-700">Academics</p>
+    <h1 class="mt-1 text-3xl font-bold tracking-tight">Academic structure</h1>
+    <p class="mt-2 text-slate-600">Configure calendars, classes, learning areas, and CBC competencies.</p>
+  </div>
+  <form
+    class="w-full sm:max-w-xs"
+    hx-get="{% url 'academics:structure' %}"
+    hx-target="#academic-tables"
+    hx-trigger="input changed delay:300ms"
+  >
+    <label class="sr-only" for="academic-search">Search structure</label>
+    <input id="academic-search" name="q" type="search" placeholder="Search grades or learning areas">
+  </form>
+</header>
+
+<section class="mt-8 grid gap-4 lg:grid-cols-3">
+  {% include "academics/partials/create_card.html" with title="Academic year" model_name="academic-year" form=academic_year_form %}
+  {% include "academics/partials/create_card.html" with title="Grade" model_name="grade" form=grade_form %}
+  {% include "academics/partials/create_card.html" with title="Stream" model_name="stream" form=stream_form %}
+  {% include "academics/partials/create_card.html" with title="Learning area" model_name="learning-area" form=learning_area_form %}
+  {% include "academics/partials/create_card.html" with title="Competency" model_name="competency" form=competency_form %}
+</section>
+
+<div id="academic-tables" class="mt-8">
+  {% include "academics/partials/structure_tables.html" %}
+</div>
+{% endblock %}

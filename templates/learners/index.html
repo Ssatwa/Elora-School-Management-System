@@ -1,0 +1,28 @@
+{% extends "layouts/app.html" %}
+{% block title %}Learners | Elora{% endblock %}
+{% block content %}
+<header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <p class="text-sm font-semibold text-blue-700">People</p>
+    <h1 class="mt-1 text-3xl font-bold tracking-tight">Learners</h1>
+    <p class="mt-2 text-slate-600">Search learner records, placements, guardians, and lifecycle history.</p>
+  </div>
+  <div class="flex flex-col gap-3 sm:flex-row">
+    <form
+      class="w-full sm:w-72"
+      hx-get="{% url 'learners:index' %}"
+      hx-target="#learner-table"
+      hx-trigger="input changed delay:300ms"
+    >
+      <label class="sr-only" for="learner-search">Search learners</label>
+      <input id="learner-search" name="q" type="search" placeholder="Name or admission number">
+    </form>
+    <a class="rounded-xl bg-blue-700 px-4 py-2.5 text-center text-sm font-semibold text-white" href="{% url 'learners:admit' %}">
+      Admit learner
+    </a>
+  </div>
+</header>
+<div id="learner-table" class="mt-8">
+  {% include "learners/partials/learner_table.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "layouts/app.html" %}
+{% block title %}Transfer {{ learner.full_name }} | Elora{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-2xl">
+  <p class="text-sm font-semibold text-blue-700">Transfers</p>
+  <h1 class="mt-1 text-3xl font-bold tracking-tight">Transfer {{ learner.full_name }}</h1>
+  <p class="mt-2 text-slate-600">The active enrollment will close while all historical records remain available.</p>
+  <form class="mt-8 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white" type="submit">Complete transfer</button>
+  </form>
+</div>
+{% endblock %}

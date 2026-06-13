@@ -1,0 +1,21 @@
+<section data-learner-table="true" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-slate-200 text-sm">
+      <thead class="bg-slate-50 text-left text-slate-600">
+        <tr><th class="px-5 py-3">Admission</th><th class="px-5 py-3">Learner</th><th class="px-5 py-3">Status</th><th class="px-5 py-3"></th></tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for learner in learners %}
+        <tr>
+          <td class="px-5 py-3 font-medium">{{ learner.admission_number }}</td>
+          <td class="px-5 py-3">{{ learner.full_name }}</td>
+          <td class="px-5 py-3">{{ learner.get_status_display }}</td>
+          <td class="px-5 py-3 text-right"><a class="font-semibold text-blue-700" href="{% url 'learners:detail' learner_id=learner.id %}">View</a></td>
+        </tr>
+        {% empty %}
+        <tr><td class="px-5 py-8 text-slate-500" colspan="4">No learners match this view.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>

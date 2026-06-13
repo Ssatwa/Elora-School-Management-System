@@ -1,0 +1,43 @@
+<section data-academic-tables="true" class="grid gap-6 xl:grid-cols-2">
+  <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 px-5 py-4">
+      <h2 class="font-semibold">Grades and streams</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200 text-sm">
+        <thead class="bg-slate-50 text-left text-slate-600">
+          <tr><th class="px-5 py-3">Grade</th><th class="px-5 py-3">Level</th><th class="px-5 py-3">Streams</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for grade in grades %}
+          <tr>
+            <td class="px-5 py-3 font-medium">{{ grade.name }}</td>
+            <td class="px-5 py-3">{{ grade.get_education_level_display }}</td>
+            <td class="px-5 py-3">
+              {% for stream in grade.streams.all %}{{ stream.name }}{% if not forloop.last %}, {% endif %}{% empty %}No streams{% endfor %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td class="px-5 py-6 text-slate-500" colspan="3">No grades match this view.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 px-5 py-4">
+      <h2 class="font-semibold">CBC curriculum</h2>
+    </div>
+    <div class="grid gap-3 p-5 sm:grid-cols-2">
+      {% for area in learning_areas %}
+      <div class="rounded-xl bg-slate-50 p-4">
+        <p class="text-xs font-semibold uppercase tracking-wide text-blue-700">{{ area.code }}</p>
+        <p class="mt-1 font-medium">{{ area.name }}</p>
+      </div>
+      {% empty %}
+      <p class="text-sm text-slate-500">No learning areas match this view.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
