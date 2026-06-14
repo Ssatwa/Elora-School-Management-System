@@ -36,6 +36,19 @@ def test_authenticated_pages_render_premium_shell(client):
     assert 'aria-controls="primary-navigation"' in content
     assert 'id="main-content"' in content
     assert content.index("/static/js/app.js") < content.index("alpinejs")
+    assert 'id="primary-navigation"' in content
+    assert 'aria-label="Primary navigation"' in content
+    assert 'aria-current="page"' in content
+    assert "data-mobile-sidebar" in content
+    assert "data-sidebar-collapse" in content
+    assert "data-mobile-sidebar-backdrop" in content
+    assert 'aria-label="Search Elora"' in content
+    assert 'aria-label="Notifications"' in content
+    assert 'aria-label="User menu"' in content
+    assert "Overview" in content
+    assert "People" in content
+    assert "Learning" in content
+    assert "Operations" in content
 
 
 def test_shell_javascript_registers_alpine_state_with_safe_storage():

@@ -30,32 +30,22 @@
   <script defer src="https://unpkg.com/alpinejs@3.15.2/dist/cdn.min.js"></script>
 </head>
 <body>
-  <a class="sr-only focus:not-sr-only" href="#main-content">Skip to content</a>
-  <div data-elora-shell class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
-    <div id="primary-navigation" class="contents">
-      {% include "components/sidebar.html" %}
-    </div>
-    <div class="min-w-0">
-      <div class="sr-only focus-within:not-sr-only">
-        <button
-          type="button"
-          aria-controls="primary-navigation"
-          :aria-expanded="sidebarOpen"
-          @click="sidebarOpen = !sidebarOpen"
-        >
-          Toggle navigation
-        </button>
-        <button
-          type="button"
-          data-theme-toggle
-          @click="toggleTheme()"
-          :aria-pressed="theme === 'dark'"
-        >
-          Toggle color theme
-        </button>
-      </div>
+  <a class="elora-skip-link" href="#main-content">Skip to content</a>
+  <div data-elora-shell class="min-h-screen lg:flex">
+    <button
+      type="button"
+      data-mobile-sidebar-backdrop
+      class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden"
+      x-cloak
+      x-show="sidebarOpen"
+      x-transition.opacity
+      @click="sidebarOpen = false"
+      aria-label="Close navigation"
+    ></button>
+    {% include "components/sidebar.html" %}
+    <div class="min-w-0 flex-1">
       {% include "components/topbar.html" %}
-      <main id="main-content" class="p-4 sm:p-6 lg:p-8">
+      <main id="main-content" class="p-4 sm:p-6 lg:p-7 xl:p-8">
         {% include "components/messages.html" %}
         {% block content %}{% endblock %}
       </main>

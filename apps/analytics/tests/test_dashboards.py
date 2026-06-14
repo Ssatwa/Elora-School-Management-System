@@ -70,6 +70,10 @@ def test_sidebar_only_shows_modules_authorized_for_role(client):
     assert "Learners" in content
     assert "Academic structure" not in content
     assert ">Staff<" not in content
+    assert 'href="/dashboard/"' in content
+    assert 'aria-current="page"' in content
+    assert 'href="/attendance/"' in content
+    assert 'href="/finance/"' not in content
 
 
 @pytest.mark.django_db

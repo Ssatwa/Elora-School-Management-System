@@ -20,6 +20,9 @@ document.addEventListener("alpine:init", () => {
     sidebarOpen: false,
     sidebarCollapsed: safeStorage.get("elora-sidebar") === "collapsed",
     theme: document.documentElement.dataset.theme || "light",
+    closeMobileSidebar() {
+      this.sidebarOpen = false;
+    },
     toggleSidebar() {
       this.sidebarCollapsed = !this.sidebarCollapsed;
       safeStorage.set(
