@@ -1,0 +1,8 @@
+<div data-empty-state class="px-6 py-12 text-center">
+  <span class="mx-auto grid size-12 place-items-center rounded-2xl bg-slate-500/10" style="color: var(--elora-muted);">
+    <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 4h14v16H5V4Zm3 5h8m-8 4h8m-8 4h5"/></svg>
+  </span>
+  <h2 class="mt-4 text-base font-semibold">{{ title }}</h2>
+  {% if description %}<p class="mx-auto mt-2 max-w-md text-sm" style="color: var(--elora-muted);">{{ description }}</p>{% endif %}
+  {% if action_url and action_label %}<a href="{{ action_url }}" class="elora-button-primary mt-5">{{ action_label }}</a>{% endif %}
+</div>

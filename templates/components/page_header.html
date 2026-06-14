@@ -1,0 +1,22 @@
+<header data-page-header class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+  <div class="min-w-0">
+    {% if breadcrumbs %}
+      <nav aria-label="Breadcrumb" class="mb-3">
+        <ol class="flex flex-wrap items-center gap-2 text-xs" style="color: var(--elora-muted);">
+          {% for breadcrumb in breadcrumbs %}
+            <li class="flex items-center gap-2">
+              {% if breadcrumb.url %}<a href="{{ breadcrumb.url }}" class="hover:text-blue-600">{{ breadcrumb.label }}</a>{% else %}<span aria-current="page">{{ breadcrumb.label }}</span>{% endif %}
+              {% if not forloop.last %}<span aria-hidden="true">/</span>{% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      </nav>
+    {% endif %}
+    {% if eyebrow %}<p class="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">{{ eyebrow }}</p>{% endif %}
+    <h1 class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">{{ title }}</h1>
+    {% if description %}<p class="mt-2 max-w-3xl text-sm sm:text-base" style="color: var(--elora-muted);">{{ description }}</p>{% endif %}
+  </div>
+  {% if action_url and action_label %}
+    <a href="{{ action_url }}" class="elora-button-primary shrink-0">{{ action_label }}</a>
+  {% endif %}
+</header>

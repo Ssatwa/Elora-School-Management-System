@@ -1,0 +1,12 @@
+<article data-metric-card class="elora-card">
+  <div class="flex items-start justify-between gap-4">
+    <div class="min-w-0">
+      <p class="truncate text-sm font-medium" style="color: var(--elora-muted);">{{ label }}</p>
+      <p class="mt-2 text-2xl font-bold tracking-tight sm:text-3xl {% if tone == 'success' %}text-emerald-600{% elif tone == 'warning' %}text-amber-600{% elif tone == 'danger' %}text-rose-600{% elif tone == 'primary' %}text-blue-600{% endif %}">{{ value }}</p>
+      {% if trend %}<p class="mt-2 text-xs font-medium" style="color: var(--elora-muted);">{{ trend }}</p>{% endif %}
+    </div>
+    {% if icon %}
+      <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10">{{ icon }}</span>
+    {% endif %}
+  </div>
+</article>

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.template import engines
 from django.urls import reverse
 
 from apps.accounts.models import Membership, Role
@@ -65,3 +66,55 @@ def test_theme_bootstrap_guards_storage_access():
     assert "function readStoredTheme()" in content
     assert "try {" in content
     assert "catch" in content
+
+
+@pytest.mark.parametrize(
+    ("template_name", "context", "marker", "expected_text"),
+    [
+        (
+            "components/page_header.html",
+            {
+                "eyebrow": "People",
+                "title": "Learners",
+                "description": "Manage learner records.",
+            },
+            "data-page-header",
+            "Learners",
+        ),
+        (
+            "components/metric_card.html",
+            {"label": "Attendance rate", "value": "94%", "tone": "success"},
+            "data-metric-card",
+            "94%",
+        ),
+        (
+            "components/empty_state.html",
+            {"title": "No records", "description": "Add the first record."},
+            "data-empty-state",
+            "No records",
+        ),
+        (
+            "components/table_shell.html",
+            {"title": "Recent records", "description": "Latest updates."},
+            "data-table-shell",
+            "Recent records",
+        ),
+    ],
+)
+def test_shared_component_contracts(template_name, context, marker, expected_text):
+    template = engines["django"].from_string(
+        f'{{% include "{template_name}" %}}'
+    )
+
+    content = template.render(context)
+
+    assert marker in content
+    assert expected_text in content
+    assert "<h1" in content if template_name.endswith("page_header.html") else True
+
+
+def test_message_component_exposes_accessible_status_roles():
+    content = Path("templates/components/messages.html").read_text()
+
+    assert 'role="alert"' in content
+    assert 'role="status"' in content
