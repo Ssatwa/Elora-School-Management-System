@@ -47,6 +47,8 @@ def test_academic_structure_only_lists_active_school_records(client):
 
     content = response.content.decode()
     assert response.status_code == 200
+    assert "data-page-header" in content
+    assert "data-record-table" in content
     assert "Grade 7" in content
     assert "Secret Grade" not in content
 
@@ -64,6 +66,7 @@ def test_academic_structure_returns_partial_for_htmx(client):
     assert response.status_code == 200
     assert "<html" not in response.content.decode()
     assert 'data-academic-tables="true"' in response.content.decode()
+    assert "data-empty-state" in response.content.decode()
 
 
 def test_teacher_cannot_configure_academic_structure(client):

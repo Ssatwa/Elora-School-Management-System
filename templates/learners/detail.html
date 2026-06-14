@@ -1,42 +1,38 @@
 {% extends "layouts/app.html" %}
 {% block title %}{{ learner.full_name }} | Elora{% endblock %}
 {% block content %}
-<header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-  <div>
-    <p class="text-sm font-semibold text-blue-700">{{ learner.admission_number }}</p>
-    <h1 class="mt-1 text-3xl font-bold tracking-tight">{{ learner.full_name }}</h1>
-    <p class="mt-2 text-slate-600">{{ learner.get_status_display }} · Admitted {{ learner.admission_date }}</p>
-  </div>
+{% url "learners:transfer" learner_id=learner.id as transfer_url %}
+<div class="space-y-6">
   {% if learner.status == "active" and can_administer_learners %}
-  <a class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold" href="{% url 'learners:transfer' learner_id=learner.id %}">
-    Transfer learner
-  </a>
+    {% include "components/page_header.html" with eyebrow=learner.admission_number title=learner.full_name description=learner.get_status_display action_url=transfer_url action_label="Transfer learner" %}
+  {% else %}
+    {% include "components/page_header.html" with eyebrow=learner.admission_number title=learner.full_name description=learner.get_status_display %}
   {% endif %}
-</header>
-<section class="mt-8 grid gap-6 lg:grid-cols-3">
-  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <h2 class="font-semibold">Guardians</h2>
-    <div class="mt-4 space-y-3">
-      {% for link in learner.guardian_links.all %}
-      <div><p class="font-medium">{{ link.guardian.full_name }}</p><p class="text-sm text-slate-600">{{ link.get_relationship_display }}{% if link.is_primary %} · Primary{% endif %}</p></div>
-      {% empty %}<p class="text-sm text-slate-500">No guardians linked.</p>{% endfor %}
-    </div>
-  </article>
-  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <h2 class="font-semibold">Enrollment history</h2>
-    <div class="mt-4 space-y-3">
-      {% for enrollment in learner.enrollments.all %}
-      <div><p class="font-medium">{{ enrollment.grade }} {{ enrollment.stream.name }}</p><p class="text-sm text-slate-600">{{ enrollment.academic_year }} · {{ enrollment.get_status_display }}</p></div>
-      {% empty %}<p class="text-sm text-slate-500">No enrollment history.</p>{% endfor %}
-    </div>
-  </article>
-  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <h2 class="font-semibold">Medical summary</h2>
-    {% if medical_record %}
-      <dl class="mt-4 space-y-3 text-sm"><div><dt class="text-slate-500">Blood group</dt><dd class="font-medium">{{ medical_record.blood_group|default:"Not recorded" }}</dd></div><div><dt class="text-slate-500">Allergies</dt><dd class="font-medium">{{ medical_record.allergies|default:"None recorded" }}</dd></div></dl>
-    {% else %}
-      <p class="mt-4 text-sm text-slate-500">Restricted or not recorded.</p>
-    {% endif %}
-  </article>
-</section>
+  <section class="grid gap-5 lg:grid-cols-3">
+    <article class="elora-card">
+      <h2 class="font-semibold">Guardians</h2>
+      <div class="mt-4 space-y-3">
+        {% for link in learner.guardian_links.all %}
+          <div><p class="font-medium">{{ link.guardian.full_name }}</p><p class="text-sm" style="color: var(--elora-muted);">{{ link.get_relationship_display }}{% if link.is_primary %} · Primary{% endif %}</p></div>
+        {% empty %}<p class="text-sm" style="color: var(--elora-muted);">No guardians linked.</p>{% endfor %}
+      </div>
+    </article>
+    <article class="elora-card">
+      <h2 class="font-semibold">Enrollment history</h2>
+      <div class="mt-4 space-y-3">
+        {% for enrollment in learner.enrollments.all %}
+          <div><p class="font-medium">{{ enrollment.grade }} {{ enrollment.stream.name }}</p><p class="text-sm" style="color: var(--elora-muted);">{{ enrollment.academic_year }} · {{ enrollment.get_status_display }}</p></div>
+        {% empty %}<p class="text-sm" style="color: var(--elora-muted);">No enrollment history.</p>{% endfor %}
+      </div>
+    </article>
+    <article class="elora-card">
+      <h2 class="font-semibold">Medical summary</h2>
+      {% if medical_record %}
+        <dl class="mt-4 space-y-3 text-sm"><div><dt style="color: var(--elora-muted);">Blood group</dt><dd class="font-medium">{{ medical_record.blood_group|default:"Not recorded" }}</dd></div><div><dt style="color: var(--elora-muted);">Allergies</dt><dd class="font-medium">{{ medical_record.allergies|default:"None recorded" }}</dd></div></dl>
+      {% else %}
+        <p class="mt-4 text-sm" style="color: var(--elora-muted);">Restricted or not recorded.</p>
+      {% endif %}
+    </article>
+  </section>
+</div>
 {% endblock %}

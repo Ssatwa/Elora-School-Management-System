@@ -1,12 +1,9 @@
 {% extends "layouts/app.html" %}
 {% block title %}Staff | Elora{% endblock %}
 {% block content %}
-<header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-  <div>
-    <p class="text-sm font-semibold text-blue-700">People</p>
-    <h1 class="mt-1 text-3xl font-bold tracking-tight">Staff and workloads</h1>
-    <p class="mt-2 text-slate-600">Manage teaching profiles, departments, assignments, and weekly workloads.</p>
-  </div>
+<div class="space-y-6">
+  {% include "components/page_header.html" with eyebrow="People" title="Staff and workloads" description="Manage teaching profiles, departments, assignments, and weekly workloads." %}
+  <div class="elora-panel p-4">
   <form
     class="w-full sm:max-w-xs"
     hx-get="{% url 'staff:index' %}"
@@ -16,15 +13,16 @@
     <label class="sr-only" for="staff-search">Search staff</label>
     <input id="staff-search" name="q" type="search" placeholder="Search staff">
   </form>
-</header>
+  </div>
 
-<section class="mt-8 grid gap-4 lg:grid-cols-3">
+<section class="grid gap-4 lg:grid-cols-3">
   {% include "staff/partials/create_card.html" with title="Teacher profile" model_name="teacher" form=teacher_form %}
   {% include "staff/partials/create_card.html" with title="Department" model_name="department" form=department_form %}
   {% include "staff/partials/create_card.html" with title="Assignment" model_name="assignment" form=assignment_form %}
 </section>
 
-<div id="staff-tables" class="mt-8">
+<div id="staff-tables">
   {% include "staff/partials/staff_tables.html" %}
+</div>
 </div>
 {% endblock %}

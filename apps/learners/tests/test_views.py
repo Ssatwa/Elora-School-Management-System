@@ -72,6 +72,8 @@ def test_learner_index_only_lists_active_school_records(client):
 
     content = response.content.decode()
     assert response.status_code == 200
+    assert "data-page-header" in content
+    assert "data-record-table" in content
     assert "2026-0001" in content
     assert "SECRET-0001" not in content
 
@@ -88,6 +90,7 @@ def test_learner_index_supports_htmx_partial(client):
 
     assert response.status_code == 200
     assert 'data-learner-table="true"' in response.content.decode()
+    assert "data-empty-state" in response.content.decode()
     assert "<html" not in response.content.decode()
 
 
