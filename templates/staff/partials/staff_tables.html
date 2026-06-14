@@ -1,11 +1,11 @@
-<section data-staff-tables="true" class="grid gap-6 xl:grid-cols-[2fr_1fr]">
-  <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <div class="border-b border-slate-200 px-5 py-4">
+<section data-staff-tables="true" data-record-table class="grid min-w-0 gap-6 xl:grid-cols-[2fr_1fr]">
+  <article class="elora-panel min-w-0 overflow-hidden">
+    <div class="border-b px-5 py-4" style="border-color: var(--elora-border);">
       <h2 class="font-semibold">Teaching staff</h2>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left text-slate-600">
+      <table class="elora-table">
+        <thead class="bg-slate-500/5 text-left" style="color: var(--elora-muted);">
           <tr><th class="px-5 py-3">Employee</th><th class="px-5 py-3">Account</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Lessons</th></tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
@@ -17,13 +17,13 @@
             <td class="px-5 py-3">{{ teacher.current_weekly_lessons }}</td>
           </tr>
           {% empty %}
-          <tr><td class="px-5 py-6 text-slate-500" colspan="4">No staff match this view.</td></tr>
+          <tr><td colspan="4">{% include "components/empty_state.html" with title="No staff found" description="No staff match the current search." %}</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </article>
-  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+  <article class="elora-card">
     <h2 class="font-semibold">Departments</h2>
     <div class="mt-4 space-y-3">
       {% for department in departments %}
@@ -32,7 +32,7 @@
         <p class="mt-1 text-sm text-slate-600">{{ department.head|default:"Head not assigned" }}</p>
       </div>
       {% empty %}
-      <p class="text-sm text-slate-500">No departments configured.</p>
+      {% include "components/empty_state.html" with title="No departments" description="Departments will appear after they are configured." %}
       {% endfor %}
     </div>
   </article>

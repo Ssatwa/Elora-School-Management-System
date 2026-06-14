@@ -1,11 +1,11 @@
-<section data-academic-tables="true" class="grid gap-6 xl:grid-cols-2">
-  <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <div class="border-b border-slate-200 px-5 py-4">
+<section data-academic-tables="true" data-record-table class="grid min-w-0 gap-6 xl:grid-cols-2">
+  <article class="elora-panel min-w-0 overflow-hidden">
+    <div class="border-b px-5 py-4" style="border-color: var(--elora-border);">
       <h2 class="font-semibold">Grades and streams</h2>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left text-slate-600">
+      <table class="elora-table">
+        <thead class="bg-slate-500/5 text-left" style="color: var(--elora-muted);">
           <tr><th class="px-5 py-3">Grade</th><th class="px-5 py-3">Level</th><th class="px-5 py-3">Streams</th></tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
@@ -18,15 +18,15 @@
             </td>
           </tr>
           {% empty %}
-          <tr><td class="px-5 py-6 text-slate-500" colspan="3">No grades match this view.</td></tr>
+          <tr><td colspan="3">{% include "components/empty_state.html" with title="No grades found" description="Grades and streams will appear after they are configured." %}</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </article>
 
-  <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <div class="border-b border-slate-200 px-5 py-4">
+  <article class="elora-panel min-w-0 overflow-hidden">
+    <div class="border-b px-5 py-4" style="border-color: var(--elora-border);">
       <h2 class="font-semibold">CBC curriculum</h2>
     </div>
     <div class="grid gap-3 p-5 sm:grid-cols-2">
@@ -36,7 +36,7 @@
         <p class="mt-1 font-medium">{{ area.name }}</p>
       </div>
       {% empty %}
-      <p class="text-sm text-slate-500">No learning areas match this view.</p>
+      {% include "components/empty_state.html" with title="No learning areas" description="CBC learning areas will appear after they are configured." %}
       {% endfor %}
     </div>
   </article>

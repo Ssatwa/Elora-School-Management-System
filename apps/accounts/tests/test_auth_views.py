@@ -17,6 +17,23 @@ def create_school_domain(slug):
 
 
 @pytest.mark.django_db
+def test_login_page_uses_branded_public_shell(client):
+    _, domain = create_school_domain("green-hills")
+
+    response = client.get(
+        reverse("accounts:login"),
+        HTTP_HOST=domain.hostname,
+    )
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert "data-public-shell" in content
+    assert "Powering Modern Education" in content
+    assert 'autocomplete="current-password"' in content
+    assert 'autocomplete="username"' in content
+
+
+@pytest.mark.django_db
 def test_member_can_log_into_school(client):
     school, domain = create_school_domain("green-hills")
     user = get_user_model().objects.create_user(

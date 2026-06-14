@@ -2,7 +2,7 @@
 {% block title %}Finance | Elora{% endblock %}
 {% block content %}
 <div class="space-y-6">
-  <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Fees and payments</p><h1 class="mt-1 text-3xl font-bold text-slate-950">Finance operations</h1><p class="mt-2 text-slate-600">Auditable invoices, payments, receipts, balances and family statements.</p></div>
+  {% include "components/page_header.html" with eyebrow="Fees and payments" title="Finance operations" description="Auditable invoices, payments, receipts, balances and family statements." %}
   <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Invoiced</p><p class="mt-2 text-3xl font-bold">KES {{ summary.invoiced }}</p></div>
     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Payments</p><p class="mt-2 text-3xl font-bold text-emerald-600">KES {{ summary.paid }}</p></div>

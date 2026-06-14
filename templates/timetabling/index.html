@@ -3,8 +3,8 @@
 {% block content %}
 <div class="space-y-6">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-    <div><p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Academic operations</p><h1 class="mt-1 text-3xl font-bold">Timetable planning</h1><p class="mt-2 text-slate-600">Build conflict-free class and teacher schedules.</p></div>
-    <a href="{% url 'timetabling:my-schedule' %}" class="rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold">My schedule</a>
+    {% include "components/page_header.html" with eyebrow="Academic operations" title="Timetable planning" description="Build conflict-free class and teacher schedules." %}
+    <a href="{% url 'timetabling:my-schedule' %}" class="elora-button-secondary">My schedule</a>
   </div>
   {% if can_manage_timetables %}
   <div class="grid gap-4 xl:grid-cols-3">

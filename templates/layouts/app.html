@@ -1,26 +1,51 @@
 {% load static %}
 <!doctype html>
-<html lang="en" x-data="{ sidebarOpen: false }">
+<html lang="en" x-data="eloraShell">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="htmx-config" content='{"historyCacheSize": 0}'>
   <title>{% block title %}Elora{% endblock %}</title>
+  <script>
+    // Production CSP must authorize this bootstrap with a nonce or hash.
+    (() => {
+      function readStoredTheme() {
+        try {
+          return localStorage.getItem("elora-theme");
+        } catch {
+          return null;
+        }
+      }
+
+      const savedTheme = readStoredTheme();
+      document.documentElement.dataset.theme = savedTheme === "dark" ? "dark" : "light";
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <script defer src="https://unpkg.com/htmx.org@2.0.8"></script>
-  <script defer src="https://unpkg.com/alpinejs@3.15.2/dist/cdn.min.js"></script>
   <script defer src="{% static 'js/app.js' %}"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.15.2/dist/cdn.min.js"></script>
 </head>
 <body>
-  <a class="sr-only focus:not-sr-only" href="#main-content">Skip to content</a>
-  <div class="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
+  <a class="elora-skip-link" href="#main-content">Skip to content</a>
+  <div data-elora-shell class="min-h-screen lg:flex">
+    <button
+      type="button"
+      data-mobile-sidebar-backdrop
+      class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden"
+      x-cloak
+      x-show="sidebarOpen"
+      x-transition.opacity
+      @click="sidebarOpen = false"
+      aria-label="Close navigation"
+    ></button>
     {% include "components/sidebar.html" %}
-    <div class="min-w-0">
+    <div class="min-w-0 flex-1">
       {% include "components/topbar.html" %}
-      <main id="main-content" class="p-4 sm:p-6 lg:p-8">
+      <main id="main-content" class="p-4 sm:p-6 lg:p-7 xl:p-8">
         {% include "components/messages.html" %}
         {% block content %}{% endblock %}
       </main>

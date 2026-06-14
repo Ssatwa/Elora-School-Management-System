@@ -1,0 +1,11 @@
+<section data-table-shell class="elora-panel overflow-hidden">
+  <div class="flex flex-col gap-3 border-b px-5 py-4 sm:flex-row sm:items-center sm:justify-between" style="border-color: var(--elora-border);">
+    <div>
+      <h2 class="text-base font-semibold">{{ title }}</h2>
+      {% if description %}<p class="mt-1 text-sm" style="color: var(--elora-muted);">{{ description }}</p>{% endif %}
+    </div>
+  </div>
+  <div data-record-table class="overflow-x-auto">
+    {% if table_template %}{% include table_template %}{% endif %}
+  </div>
+</section>

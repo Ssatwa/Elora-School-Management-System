@@ -1,21 +1,31 @@
-<section data-learner-table="true" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-  <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-slate-200 text-sm">
-      <thead class="bg-slate-50 text-left text-slate-600">
-        <tr><th class="px-5 py-3">Admission</th><th class="px-5 py-3">Learner</th><th class="px-5 py-3">Status</th><th class="px-5 py-3"></th></tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100">
-        {% for learner in learners %}
-        <tr>
-          <td class="px-5 py-3 font-medium">{{ learner.admission_number }}</td>
-          <td class="px-5 py-3">{{ learner.full_name }}</td>
-          <td class="px-5 py-3">{{ learner.get_status_display }}</td>
-          <td class="px-5 py-3 text-right"><a class="font-semibold text-blue-700" href="{% url 'learners:detail' learner_id=learner.id %}">View</a></td>
-        </tr>
-        {% empty %}
-        <tr><td class="px-5 py-8 text-slate-500" colspan="4">No learners match this view.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+<section data-learner-table="true" data-record-table class="elora-panel overflow-hidden">
+  {% if learners %}
+    <div class="hidden overflow-x-auto md:block">
+      <table class="elora-table">
+        <thead class="bg-slate-500/5 text-left" style="color: var(--elora-muted);">
+          <tr><th class="px-5 py-3">Admission</th><th class="px-5 py-3">Learner</th><th class="px-5 py-3">Status</th><th class="px-5 py-3"></th></tr>
+        </thead>
+        <tbody class="divide-y" style="border-color: var(--elora-border);">
+          {% for learner in learners %}
+            <tr>
+              <td class="px-5 py-3 font-medium">{{ learner.admission_number }}</td>
+              <td class="px-5 py-3">{{ learner.full_name }}</td>
+              <td class="px-5 py-3"><span class="{% if learner.status == 'active' %}elora-badge-success{% else %}elora-badge-warning{% endif %}">{{ learner.get_status_display }}</span></td>
+              <td class="px-5 py-3 text-right"><a class="font-semibold text-blue-600" href="{% url 'learners:detail' learner_id=learner.id %}">View</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="divide-y md:hidden" style="border-color: var(--elora-border);">
+      {% for learner in learners %}
+        <a href="{% url 'learners:detail' learner_id=learner.id %}" class="flex items-center justify-between gap-4 p-4">
+          <span><span class="block font-semibold">{{ learner.full_name }}</span><span class="mt-1 block text-xs" style="color: var(--elora-muted);">{{ learner.admission_number }}</span></span>
+          <span class="{% if learner.status == 'active' %}elora-badge-success{% else %}elora-badge-warning{% endif %}">{{ learner.get_status_display }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "components/empty_state.html" with title="No learners found" description="No learners match the current search or filters." %}
+  {% endif %}
 </section>

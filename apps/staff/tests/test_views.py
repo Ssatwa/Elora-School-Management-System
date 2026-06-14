@@ -52,6 +52,8 @@ def test_staff_index_only_lists_active_school_records(client):
 
     content = response.content.decode()
     assert response.status_code == 200
+    assert "data-page-header" in content
+    assert "data-record-table" in content
     assert "EMP-001" in content
     assert "SECRET-001" not in content
 
@@ -68,6 +70,7 @@ def test_staff_index_supports_htmx_partial(client):
 
     assert response.status_code == 200
     assert 'data-staff-tables="true"' in response.content.decode()
+    assert "data-empty-state" in response.content.decode()
     assert "<html" not in response.content.decode()
 
 
