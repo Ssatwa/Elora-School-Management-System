@@ -42,3 +42,86 @@ document.addEventListener("alpine:init", () => {
 document.body.addEventListener("htmx:responseError", () => {
   window.dispatchEvent(new CustomEvent("elora:request-error"));
 });
+
+function dashboardChartColors() {
+  const styles = getComputedStyle(document.documentElement);
+  return {
+    text: styles.getPropertyValue("--elora-muted").trim(),
+    border: styles.getPropertyValue("--elora-border").trim(),
+    primary: styles.getPropertyValue("--elora-primary").trim(),
+  };
+}
+
+function dashboardChartData(id) {
+  const element = document.getElementById(id);
+  return element ? JSON.parse(element.textContent) : null;
+}
+
+function initializeDashboardCharts() {
+  if (typeof Chart === "undefined") return;
+
+  const colors = dashboardChartColors();
+  const performanceCanvas = document.getElementById("dashboard-performance-chart");
+  const performanceData = dashboardChartData("dashboard-performance-data");
+  const attendanceCanvas = document.getElementById("dashboard-attendance-chart");
+  const attendanceData = dashboardChartData("dashboard-attendance-data");
+
+  if (performanceCanvas && performanceData) {
+    window.eloraPerformanceChart?.destroy();
+    window.eloraPerformanceChart = new Chart(performanceCanvas, {
+      type: "bar",
+      data: {
+        labels: performanceData.labels,
+        datasets: [{
+          data: performanceData.values,
+          backgroundColor: colors.primary,
+          borderRadius: 8,
+          maxBarThickness: 54,
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: colors.text } },
+          y: {
+            beginAtZero: true,
+            grid: { color: colors.border },
+            ticks: { color: colors.text, precision: 0 },
+          },
+        },
+      },
+    });
+  }
+
+  if (attendanceCanvas && attendanceData) {
+    window.eloraAttendanceChart?.destroy();
+    window.eloraAttendanceChart = new Chart(attendanceCanvas, {
+      type: "doughnut",
+      data: {
+        labels: attendanceData.labels,
+        datasets: [{
+          data: attendanceData.values,
+          backgroundColor: ["#2563eb", "#e11d48", "#d97706", "#7c3aed"],
+          borderWidth: 0,
+          spacing: 3,
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        cutout: "68%",
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: { color: colors.text, boxWidth: 9, usePointStyle: true },
+          },
+        },
+      },
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", initializeDashboardCharts);
+window.addEventListener("elora:theme-change", initializeDashboardCharts);

@@ -95,5 +95,34 @@ def test_seeded_school_dashboard_shows_live_metrics_and_chart(client, settings):
     assert response.status_code == 200
     assert "Total learners" in content
     assert "Fee collection" in content
-    assert "dashboardChart" in content
+    assert "Performance overview" in content
+    assert "Upcoming events" in content
+    assert "Attendance overview" in content
+    assert "Recent activity" in content
+    assert 'id="dashboard-performance-chart"' in content
+    assert 'id="dashboard-attendance-chart"' in content
+    assert "data-dashboard-chart" in content
     assert "Your workspace is ready" not in content
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("role_code", ["parent", "learner"])
+def test_family_dashboards_do_not_show_administrator_shortcuts(client, role_code):
+    school = School.objects.create(name="Green Hills", slug=f"family-{role_code}")
+    domain = SchoolDomain.objects.create(
+        school=school,
+        hostname=f"family-{role_code}.localhost",
+        is_primary=True,
+    )
+    user = get_user_model().objects.create_user(f"{role_code}@family.test")
+    role = Role.objects.create(code=role_code, name=role_code.title())
+    membership = Membership.objects.create(user=user, school=school)
+    membership.roles.add(role)
+    client.force_login(user)
+
+    response = client.get(reverse("analytics:dashboard"), HTTP_HOST=domain.hostname)
+    content = response.content.decode()
+
+    assert response.status_code == 200
+    assert "Manage academic structure" not in content
+    assert "Manage staff" not in content
