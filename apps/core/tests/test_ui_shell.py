@@ -141,7 +141,10 @@ def test_module_landing_pages_use_shared_page_header(template_path):
     assert 'components/page_header.html' in content
 
 
-@pytest.mark.parametrize("template_path", ["templates/403.html", "templates/404.html", "templates/500.html"])
+@pytest.mark.parametrize(
+    "template_path",
+    ["templates/403.html", "templates/404.html", "templates/500.html"],
+)
 def test_error_pages_offer_safe_navigation(template_path):
     content = Path(template_path).read_text()
 
