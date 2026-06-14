@@ -118,3 +118,24 @@ def test_message_component_exposes_accessible_status_roles():
 
     assert 'role="alert"' in content
     assert 'role="status"' in content
+
+
+@pytest.mark.parametrize(
+    "template_path",
+    [
+        "templates/attendance/index.html",
+        "templates/assessments/index.html",
+        "templates/learning/index.html",
+        "templates/timetabling/index.html",
+        "templates/reports/index.html",
+        "templates/finance/index.html",
+        "templates/communication/index.html",
+        "templates/library/index.html",
+        "templates/wellbeing/index.html",
+        "templates/activities/index.html",
+    ],
+)
+def test_module_landing_pages_use_shared_page_header(template_path):
+    content = Path(template_path).read_text()
+
+    assert 'components/page_header.html' in content

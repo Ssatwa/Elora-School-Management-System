@@ -3,14 +3,10 @@
 {% block content %}
 <div class="space-y-6">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-    <div>
-      <p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Daily operations</p>
-      <h1 class="mt-1 text-3xl font-bold text-slate-950">Attendance operations</h1>
-      <p class="mt-2 text-slate-600">Complete registers, follow up absences, and retain every correction.</p>
-    </div>
+    {% include "components/page_header.html" with eyebrow="Daily operations" title="Attendance operations" description="Complete registers, follow up absences, and retain every correction." %}
     <div class="flex flex-wrap gap-3">
-      {% if can_record_staff_attendance %}<a href="{% url 'attendance:staff-register' %}" class="rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-800">Take staff attendance</a>{% endif %}
-      {% if can_record_learner_attendance %}<a href="{% url 'attendance:learner-register' %}" class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white shadow-sm hover:bg-blue-700">Take learner attendance</a>{% endif %}
+      {% if can_record_staff_attendance %}<a href="{% url 'attendance:staff-register' %}" class="elora-button-secondary">Take staff attendance</a>{% endif %}
+      {% if can_record_learner_attendance %}<a href="{% url 'attendance:learner-register' %}" class="elora-button-primary">Take learner attendance</a>{% endif %}
     </div>
   </div>
 
