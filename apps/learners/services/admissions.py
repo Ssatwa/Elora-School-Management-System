@@ -21,8 +21,14 @@ def _next_admission_number(*, school, year):
         defaults={"last_number": 0},
     )
     sequence.last_number += 1
+    admission_number = f"{year}-{sequence.last_number:04d}"
+    while Learner.objects.for_school(school).filter(
+        admission_number=admission_number
+    ).exists():
+        sequence.last_number += 1
+        admission_number = f"{year}-{sequence.last_number:04d}"
     sequence.save(update_fields=["last_number", "updated_at"])
-    return f"{year}-{sequence.last_number:04d}"
+    return admission_number
 
 
 @transaction.atomic

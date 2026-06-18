@@ -131,6 +131,37 @@ def test_admission_numbers_increment_per_school_and_year():
     assert numbers == ["2026-0001", "2026-0002"]
 
 
+def test_admission_number_skips_existing_learner_when_sequence_is_missing():
+    school = cast(School, SchoolFactory())
+    actor = cast(User, UserFactory())
+    academic_year, grade, stream = create_academic_context(school)
+    Learner.objects.create(
+        school=school,
+        admission_number="2026-0001",
+        first_name="Existing",
+        last_name="Learner",
+        date_of_birth=date(2013, 1, 1),
+        gender=Learner.Gender.FEMALE,
+        admission_date=date(2026, 1, 6),
+    )
+    application = create_application(school, grade)
+
+    learner = admit_learner(
+        school=school,
+        actor=actor,
+        application=application,
+        academic_year=academic_year,
+        grade=grade,
+        stream=stream,
+        admission_date=date(2026, 1, 7),
+        learner_data={},
+        guardians=[],
+        medical_data={},
+    )
+
+    assert learner.admission_number == "2026-0002"
+
+
 def test_invalid_cross_school_placement_rolls_back_entire_admission():
     first_school = cast(School, SchoolFactory())
     second_school = cast(School, SchoolFactory())
