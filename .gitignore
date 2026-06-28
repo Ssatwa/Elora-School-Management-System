@@ -1,32 +1,92 @@
+# Workspace
 .worktrees/
 .superpowers/
 
-# Python
+# Python bytecode and packaging
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
 *.egg-info/
+*.egg
+.installed.cfg
+MANIFEST
+
+# Python tooling
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.tox/
+.nox/
 .coverage
+.coverage.*
 htmlcov/
-.venv/
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
+.cache/
 
-# Django
+# Django and local data
 *.sqlite3
+db.sqlite3
+db.sqlite3-journal
 media/
 staticfiles/
+local_settings.py
+*.log
+.server.*.log
+learner-bulk-upload-template.csv
 
 # Node
 node_modules/
 
 # Environment
 .env
-.server.*.log
-learner-bulk-upload-template.csv
+.envrc
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # Editors and OS
 .idea/
 .vscode/
 .DS_Store
 Thumbs.db
+tempCodeRunnerFile.py
+
+# Misc tools
+.ipynb_checkpoints/
+.pybuilder/
+target/
+docs/_build/
+/site
+.pyre/
+.pytype/
+cython_debug/
+.pdm-python
+.pdm-build/
+.pixi/
+__pypackages__/
+celerybeat-schedule
+celerybeat.pid
+*.rdb
+*.aof
+*.pid
