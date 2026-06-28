@@ -3,7 +3,14 @@
 {% block content %}
 <div class="mx-auto max-w-4xl">
   {% include "components/page_header.html" with eyebrow="Admissions" title="Admit a learner" description="Create the learner, primary guardian, medical summary, placement, and enrollment in one transaction." %}
-  <form class="elora-form-section mt-8 grid gap-5 sm:grid-cols-2" method="post">
+  <section class="elora-form-section mt-8 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-base font-semibold text-slate-950">Bulk upload learners</h2>
+      <p class="mt-1 text-sm text-slate-600">Import many learners from a CSV, XLSX, or XLS file after validation preview.</p>
+    </div>
+    <a class="elora-button-secondary" href="{% url 'learners:bulk_admit' %}">Bulk Upload Learners</a>
+  </section>
+  <form class="elora-form-section mt-6 grid gap-5 sm:grid-cols-2" method="post">
     {% csrf_token %}
     {% for field in form %}
     <div class="{% if field.name == 'allergies' or field.name == 'conditions' or field.name == 'medication' %}sm:col-span-2{% endif %}">

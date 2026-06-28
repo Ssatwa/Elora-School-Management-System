@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from apps.academics.models import Term
@@ -251,6 +251,9 @@ def _dashboard_data(user, school, role_code):
 
 @login_required
 def dashboard(request):
+    if request.school is None:
+        return redirect("accounts:select_school")
+
     membership = (
         Membership.objects.select_related("school")
         .prefetch_related("roles")

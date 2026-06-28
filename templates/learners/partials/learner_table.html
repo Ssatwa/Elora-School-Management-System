@@ -3,13 +3,22 @@
     <div class="hidden overflow-x-auto md:block">
       <table class="elora-table">
         <thead class="bg-slate-500/5 text-left" style="color: var(--elora-muted);">
-          <tr><th class="px-5 py-3">Admission</th><th class="px-5 py-3">Learner</th><th class="px-5 py-3">Status</th><th class="px-5 py-3"></th></tr>
+          <tr>
+            <th class="px-5 py-3"><a class="inline-flex items-center gap-1 font-semibold hover:text-blue-600" href="{{ sort_links.admission.url }}">Admission{% if sort_links.admission.active %}<span aria-hidden="true">{% if sort_links.admission.direction == "asc" %}↑{% else %}↓{% endif %}</span>{% endif %}</a></th>
+            <th class="px-5 py-3"><a class="inline-flex items-center gap-1 font-semibold hover:text-blue-600" href="{{ sort_links.name.url }}">Learner{% if sort_links.name.active %}<span aria-hidden="true">{% if sort_links.name.direction == "asc" %}↑{% else %}↓{% endif %}</span>{% endif %}</a></th>
+            <th class="px-5 py-3"><a class="inline-flex items-center gap-1 font-semibold hover:text-blue-600" href="{{ sort_links.grade.url }}">Grade/Class{% if sort_links.grade.active %}<span aria-hidden="true">{% if sort_links.grade.direction == "asc" %}↑{% else %}↓{% endif %}</span>{% endif %}</a></th>
+            <th class="px-5 py-3"><a class="inline-flex items-center gap-1 font-semibold hover:text-blue-600" href="{{ sort_links.stream.url }}">Stream{% if sort_links.stream.active %}<span aria-hidden="true">{% if sort_links.stream.direction == "asc" %}↑{% else %}↓{% endif %}</span>{% endif %}</a></th>
+            <th class="px-5 py-3"><a class="inline-flex items-center gap-1 font-semibold hover:text-blue-600" href="{{ sort_links.status.url }}">Status{% if sort_links.status.active %}<span aria-hidden="true">{% if sort_links.status.direction == "asc" %}↑{% else %}↓{% endif %}</span>{% endif %}</a></th>
+            <th class="px-5 py-3"></th>
+          </tr>
         </thead>
         <tbody class="divide-y" style="border-color: var(--elora-border);">
           {% for learner in learners %}
             <tr>
               <td class="px-5 py-3 font-medium">{{ learner.admission_number }}</td>
               <td class="px-5 py-3">{{ learner.full_name }}</td>
+              <td class="px-5 py-3">{{ learner.current_grade_name|default:"Unassigned" }}</td>
+              <td class="px-5 py-3">{{ learner.current_stream_name|default:"Unassigned" }}</td>
               <td class="px-5 py-3"><span class="{% if learner.status == 'active' %}elora-badge-success{% else %}elora-badge-warning{% endif %}">{{ learner.get_status_display }}</span></td>
               <td class="px-5 py-3 text-right"><a class="font-semibold text-blue-600" href="{% url 'learners:detail' learner_id=learner.id %}">View</a></td>
             </tr>
@@ -20,7 +29,10 @@
     <div class="divide-y md:hidden" style="border-color: var(--elora-border);">
       {% for learner in learners %}
         <a href="{% url 'learners:detail' learner_id=learner.id %}" class="flex items-center justify-between gap-4 p-4">
-          <span><span class="block font-semibold">{{ learner.full_name }}</span><span class="mt-1 block text-xs" style="color: var(--elora-muted);">{{ learner.admission_number }}</span></span>
+          <span>
+            <span class="block font-semibold">{{ learner.full_name }}</span>
+            <span class="mt-1 block text-xs" style="color: var(--elora-muted);">{{ learner.admission_number }} · {{ learner.current_grade_name|default:"Unassigned" }} · {{ learner.current_stream_name|default:"Unassigned" }}</span>
+          </span>
           <span class="{% if learner.status == 'active' %}elora-badge-success{% else %}elora-badge-warning{% endif %}">{{ learner.get_status_display }}</span>
         </a>
       {% endfor %}

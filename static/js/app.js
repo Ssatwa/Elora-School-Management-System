@@ -125,3 +125,16 @@ function initializeDashboardCharts() {
 
 document.addEventListener("DOMContentLoaded", initializeDashboardCharts);
 window.addEventListener("elora:theme-change", initializeDashboardCharts);
+
+document.addEventListener("submit", (event) => {
+  const form = event.target.closest("[data-loading-form]");
+  if (!form) return;
+
+  form.querySelectorAll("button[type='submit']").forEach((button) => {
+    const loadingLabel = button.dataset.loadingLabel || "Working...";
+    button.dataset.originalLabel = button.textContent;
+    button.textContent = loadingLabel;
+    button.disabled = true;
+    button.setAttribute("aria-busy", "true");
+  });
+});

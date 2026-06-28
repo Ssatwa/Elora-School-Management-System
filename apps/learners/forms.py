@@ -28,6 +28,8 @@ class AdmissionForm(forms.Form):
 
     def __init__(self, *args, school, **kwargs):
         super().__init__(*args, **kwargs)
+        if school is None:
+            return
         academic_year_field = cast(
             forms.ModelChoiceField,
             self.fields["academic_year"],

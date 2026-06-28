@@ -1,0 +1,109 @@
+{% extends "layouts/app.html" %}
+{% block title %}Bulk Upload Learners | Elora{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-6xl">
+  {% include "components/page_header.html" with eyebrow="Admissions" title="Bulk upload learners" description="Upload a CSV, XLSX, or XLS file, preview validation results, and import valid learners into the active school." %}
+
+  <section class="elora-form-section mt-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-base font-semibold text-slate-950">Upload file</h2>
+        <p class="mt-1 text-sm text-slate-600">Use the template headers exactly. Learners are admitted under the current school only.</p>
+      </div>
+      <a class="elora-button-secondary" href="{% url 'learners:bulk_admit_template' %}" download="learner-admission-template.xlsx" type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">Download Excel Template</a>
+    </div>
+    <form class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-end" method="post" enctype="multipart/form-data" data-loading-form>
+      {% csrf_token %}
+      <div class="grow">
+        <label class="mb-1 block text-sm font-medium" for="bulk-file">Learner file</label>
+        <input class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" id="bulk-file" name="file" type="file" accept=".csv,.xlsx,.xls" required>
+      </div>
+      <button class="elora-button-primary" type="submit" data-loading-label="Reading file...">Preview Upload</button>
+    </form>
+  </section>
+
+  {% if result %}
+    {% if result.file_errors %}
+    <section class="mt-6 rounded-xl border border-red-200 bg-red-50 p-4">
+      <h2 class="text-base font-semibold text-red-900">File errors</h2>
+      {% for error in result.file_errors %}
+      <p class="mt-1 text-sm text-red-800">{{ error }}</p>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-2">
+      <section class="rounded-xl border border-emerald-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 p-4">
+          <h2 class="text-base font-semibold text-slate-950">Successful rows</h2>
+          <p class="mt-1 text-sm text-slate-600">{{ result.valid_count }} learner row(s) ready.</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th class="px-4 py-3">Row</th>
+                <th class="px-4 py-3">Learner</th>
+                <th class="px-4 py-3">Grade</th>
+                <th class="px-4 py-3">Stream</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for row in result.valid_rows %}
+              <tr>
+                <td class="px-4 py-3">{{ row.row_number }}</td>
+                <td class="px-4 py-3">{{ row.learner_name }}</td>
+                <td class="px-4 py-3">{{ row.values.Grade }}</td>
+                <td class="px-4 py-3">{{ row.values.Stream }}</td>
+              </tr>
+              {% empty %}
+              <tr><td class="px-4 py-4 text-slate-500" colspan="4">No valid rows found.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="rounded-xl border border-red-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 p-4">
+          <h2 class="text-base font-semibold text-slate-950">Failed rows</h2>
+          <p class="mt-1 text-sm text-slate-600">{{ result.error_count }} row(s) need changes.</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th class="px-4 py-3">Row</th>
+                <th class="px-4 py-3">Learner</th>
+                <th class="px-4 py-3">Errors</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {% for row in result.error_rows %}
+              <tr class="bg-red-50/50">
+                <td class="px-4 py-3">{{ row.row_number }}</td>
+                <td class="px-4 py-3">{{ row.learner_name|default:"Unnamed learner" }}</td>
+                <td class="px-4 py-3">
+                  {% for error in row.errors %}
+                  <p><span class="font-medium">{{ error.field }}:</span> {{ error.issue }}</p>
+                  {% endfor %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td class="px-4 py-4 text-slate-500" colspan="3">No failed rows.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    {% if result.valid_count %}
+    <form class="mt-6" method="post" action="{% url 'learners:bulk_admit_confirm' %}" data-loading-form>
+      {% csrf_token %}
+      <button class="elora-button-primary" data-bulk-confirm data-loading-label="Importing..." type="submit">Import {{ result.valid_count }} Valid Learner{{ result.valid_count|pluralize }}</button>
+    </form>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

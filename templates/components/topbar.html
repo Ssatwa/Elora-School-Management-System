@@ -79,6 +79,7 @@
           <p class="truncate text-sm font-semibold">{{ request.user.email }}</p>
           <p class="text-xs" style="color: var(--elora-muted);">{{ request.school.name|default:"Elora Platform" }}</p>
         </div>
+        <a href="{% url 'accounts:select_school' %}" class="mt-1 block rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-500/10" role="menuitem">Switch school</a>
         <form method="post" action="{% url 'accounts:logout' %}" class="mt-1">
           {% csrf_token %}
           <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium hover:bg-slate-500/10" role="menuitem">Sign out</button>

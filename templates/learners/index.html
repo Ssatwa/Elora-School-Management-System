@@ -2,6 +2,52 @@
 {% block title %}Learners | Elora{% endblock %}
 {% block content %}
 {% url "learners:admit" as admit_url %}
+<style>
+  .learner-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .learner-filter-search,
+  .learner-filter-control,
+  .learner-filter-reset {
+    width: 100%;
+  }
+
+  .learner-filter-reset {
+    align-items: center;
+    display: inline-flex;
+    height: 2.75rem;
+    justify-content: center;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .learner-filter-form {
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+
+    .learner-filter-search {
+      flex: 1 1 10rem;
+      min-width: 8rem;
+      width: auto;
+    }
+
+    .learner-filter-control {
+      flex: 0 0 8rem;
+      width: 8rem;
+    }
+
+    .learner-filter-reset {
+      flex: 0 0 auto;
+      width: auto;
+      white-space: nowrap;
+    }
+  }
+</style>
 <div class="space-y-6">
   {% if can_administer_learners %}
     {% include "components/page_header.html" with eyebrow="People" title="Learners" description="Search learner records, placements, guardians, and lifecycle history." action_url=admit_url action_label="Admit learner" %}
@@ -10,13 +56,45 @@
   {% endif %}
   <div class="elora-panel p-4">
     <form
-      class="w-full sm:max-w-md"
+      class="learner-filter-form"
       hx-get="{% url 'learners:index' %}"
       hx-target="#learner-table"
-      hx-trigger="input changed delay:300ms"
+      hx-trigger="input changed delay:300ms, change"
     >
-      <label class="sr-only" for="learner-search">Search learners</label>
-      <input id="learner-search" name="q" type="search" placeholder="Name or admission number">
+      <input type="hidden" name="sort" value="{{ filters.sort }}">
+      <input type="hidden" name="direction" value="{{ filters.direction }}">
+      <div class="learner-filter-search">
+        <label class="sr-only" for="learner-search">Search learners</label>
+        <input id="learner-search" name="q" type="search" value="{{ filters.q }}" placeholder="Name, admission, grade, or stream">
+      </div>
+      <div class="learner-filter-control">
+        <label class="sr-only" for="learner-grade">Grade/Class</label>
+        <select id="learner-grade" name="grade">
+          <option value="">All grades</option>
+          {% for grade in grades %}
+            <option value="{{ grade.id }}" {% if filters.grade == grade.id|stringformat:"s" %}selected{% endif %}>{{ grade.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="learner-filter-control">
+        <label class="sr-only" for="learner-stream">Stream</label>
+        <select id="learner-stream" name="stream">
+          <option value="">All streams</option>
+          {% for stream in streams %}
+            <option value="{{ stream.id }}" {% if filters.stream == stream.id|stringformat:"s" %}selected{% endif %}>{{ stream.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="learner-filter-control">
+        <label class="sr-only" for="learner-status">Status</label>
+        <select id="learner-status" name="status">
+          <option value="">All statuses</option>
+          {% for value,label in statuses %}
+            <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <a href="{% url 'learners:index' %}" class="learner-filter-reset rounded-xl border text-sm font-semibold" style="border-color: var(--elora-border);">Reset</a>
     </form>
   </div>
   <div id="learner-table">

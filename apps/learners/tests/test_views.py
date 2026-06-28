@@ -22,39 +22,59 @@ def login_membership(client, school: School, role_code: str):
     return membership
 
 
-def create_academic_context(school: School):
-    year = AcademicYear.objects.create(
+def create_academic_context(school: School, grade_order=7, grade_name="Grade 7", stream_name="East"):
+    year, _ = AcademicYear.objects.get_or_create(
         school=school,
         name="2026",
-        start_date=date(2026, 1, 1),
-        end_date=date(2026, 12, 31),
-        status=AcademicYear.Status.ACTIVE,
+        defaults={
+            "start_date": date(2026, 1, 1),
+            "end_date": date(2026, 12, 31),
+            "status": AcademicYear.Status.ACTIVE,
+        },
     )
     grade = Grade.objects.create(
         school=school,
-        code="G7",
-        name="Grade 7",
+        code=f"G{grade_order}",
+        name=grade_name,
         education_level=Grade.EducationLevel.JUNIOR_SCHOOL,
-        order=7,
+        order=grade_order,
     )
     stream = Stream.objects.create(
         school=school,
         grade=grade,
-        code="E",
-        name="East",
+        code=stream_name[:1].upper(),
+        name=stream_name,
     )
     return year, grade, stream
 
 
-def create_learner(school: School, admission_number: str):
+def create_learner(
+    school: School,
+    admission_number: str,
+    first_name="Amina",
+    last_name="Kamau",
+    status=Learner.Status.ACTIVE,
+):
     return Learner.objects.create(
         school=school,
         admission_number=admission_number,
-        first_name="Amina",
-        last_name="Kamau",
+        first_name=first_name,
+        last_name=last_name,
         date_of_birth=date(2013, 6, 12),
         gender=Learner.Gender.FEMALE,
         admission_date=date(2026, 1, 6),
+        status=status,
+    )
+
+
+def enroll(school: School, learner: Learner, year, grade, stream):
+    return Enrollment.objects.create(
+        school=school,
+        learner=learner,
+        academic_year=year,
+        grade=grade,
+        stream=stream,
+        start_date=date(2026, 1, 6),
     )
 
 
@@ -76,6 +96,98 @@ def test_learner_index_only_lists_active_school_records(client):
     assert "data-record-table" in content
     assert "2026-0001" in content
     assert "SECRET-0001" not in content
+
+
+def test_learner_index_defaults_to_grade_stream_and_name_order(client):
+    school = cast(School, SchoolFactory())
+    login_membership(client, school, "teacher")
+    year, grade_one, blue = create_academic_context(
+        school,
+        grade_order=1,
+        grade_name="Grade 1",
+        stream_name="Blue",
+    )
+    _, grade_two, red = create_academic_context(
+        school,
+        grade_order=2,
+        grade_name="Grade 2",
+        stream_name="Red",
+    )
+    jane = create_learner(school, "2026-0002", first_name="Jane", last_name="Doe")
+    amina = create_learner(school, "2026-0001", first_name="Amina", last_name="Kamau")
+    mary = create_learner(school, "2026-0003", first_name="Mary", last_name="Wanjiku")
+    enroll(school, jane, year, grade_one, blue)
+    enroll(school, amina, year, grade_one, blue)
+    enroll(school, mary, year, grade_two, red)
+
+    response = client.get(reverse("learners:index"), HTTP_HOST=f"{school.slug}.localhost")
+    content = response.content.decode()
+
+    assert content.index("Amina Kamau") < content.index("Jane Doe")
+    assert content.index("Jane Doe") < content.index("Mary Wanjiku")
+    assert "Grade 1" in content
+    assert "Blue" in content
+
+
+def test_learner_index_filters_by_grade_stream_status_and_searches_placement(client):
+    school = cast(School, SchoolFactory())
+    login_membership(client, school, "teacher")
+    year, grade_one, blue = create_academic_context(
+        school,
+        grade_order=1,
+        grade_name="Grade 1",
+        stream_name="Blue",
+    )
+    _, grade_two, red = create_academic_context(
+        school,
+        grade_order=2,
+        grade_name="Grade 2",
+        stream_name="Red",
+    )
+    amina = create_learner(school, "2026-0001", first_name="Amina", last_name="Kamau")
+    mary = create_learner(
+        school,
+        "2026-0002",
+        first_name="Mary",
+        last_name="Wanjiku",
+        status=Learner.Status.INACTIVE,
+    )
+    enroll(school, amina, year, grade_one, blue)
+    enroll(school, mary, year, grade_two, red)
+
+    filtered = client.get(
+        reverse("learners:index"),
+        {"grade": str(grade_one.id), "stream": str(blue.id), "status": Learner.Status.ACTIVE},
+        HTTP_HOST=f"{school.slug}.localhost",
+    ).content.decode()
+    searched = client.get(
+        reverse("learners:index"),
+        {"q": "red"},
+        HTTP_HOST=f"{school.slug}.localhost",
+    ).content.decode()
+
+    assert "Amina Kamau" in filtered
+    assert "Mary Wanjiku" not in filtered
+    assert "Mary Wanjiku" in searched
+    assert "Amina Kamau" not in searched
+
+
+def test_learner_index_sorts_by_selected_column_and_preserves_view_action(client):
+    school = cast(School, SchoolFactory())
+    login_membership(client, school, "teacher")
+    create_learner(school, "2026-0002", first_name="Brian", last_name="Otieno")
+    create_learner(school, "2026-0001", first_name="Amina", last_name="Kamau")
+
+    response = client.get(
+        reverse("learners:index"),
+        {"sort": "admission", "direction": "asc"},
+        HTTP_HOST=f"{school.slug}.localhost",
+    )
+    content = response.content.decode()
+
+    assert content.index("2026-0001") < content.index("2026-0002")
+    assert "View" in content
+    assert "Unassigned" in content
 
 
 def test_learner_index_supports_htmx_partial(client):

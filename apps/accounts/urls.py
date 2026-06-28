@@ -1,11 +1,11 @@
-from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from apps.accounts.views import SchoolLoginView
+from apps.accounts.views import SchoolLoginView, SchoolSelectionView, universal_logout
 
 app_name = "accounts"
 
 urlpatterns = [
     path("login/", SchoolLoginView.as_view(), name="login"),
-    path("logout/", LogoutView.as_view(), name="logout"),
+    path("schools/", SchoolSelectionView.as_view(), name="select_school"),
+    path("logout/", universal_logout, name="logout"),
 ]

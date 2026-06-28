@@ -1,7 +1,7 @@
 from django.http import Http404
 
 from apps.tenancy.context import current_school
-from apps.tenancy.models import SchoolDomain
+from apps.tenancy.models import School, SchoolDomain
 from apps.tenancy.rls import clear_database_school, set_database_school
 
 
@@ -16,7 +16,15 @@ class TenantMiddleware:
         request.school = None
         token = current_school.set(None)
         try:
-            if host not in self.platform_hosts:
+            if host in self.platform_hosts:
+                school_id = request.session.get("active_school_id")
+                if school_id:
+                    school = School.objects.filter(id=school_id, is_active=True).first()
+                    if school:
+                        request.school = school
+                        current_school.set(school)
+                        set_database_school(school.id)
+            else:
                 domain = (
                     SchoolDomain.objects.select_related("school")
                     .filter(hostname=host, school__is_active=True)

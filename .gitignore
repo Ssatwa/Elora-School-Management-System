@@ -4,6 +4,7 @@
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -21,6 +22,8 @@ node_modules/
 
 # Environment
 .env
+.server.*.log
+learner-bulk-upload-template.csv
 
 # Editors and OS
 .idea/
