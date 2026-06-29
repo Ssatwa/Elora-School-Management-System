@@ -188,6 +188,38 @@ class Stream(UUIDModel, TimeStampedModel):
         return f"{self.grade} {self.name}"
 
 
+class StreamLabel(UUIDModel, TimeStampedModel):
+    school = models.ForeignKey(
+        "tenancy.School",
+        on_delete=models.CASCADE,
+        related_name="stream_labels",
+    )
+    code = models.SlugField(max_length=32)
+    name = models.CharField(max_length=80)
+    is_active = models.BooleanField(default=True)
+
+    objects = TenantManager()
+
+    class Meta:
+        ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "code"],
+                name="unique_stream_label_code_per_school",
+            ),
+            models.UniqueConstraint(
+                fields=["school", "name"],
+                name="unique_stream_label_name_per_school",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["school", "is_active", "name"]),
+        ]
+
+    def __str__(self):
+        return self.name
+
+
 class LearningArea(UUIDModel, TimeStampedModel):
     school = models.ForeignKey(
         "tenancy.School",

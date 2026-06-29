@@ -1,5 +1,3 @@
-from typing import cast
-
 from django import forms
 
 from apps.academics.models import (
@@ -7,7 +5,7 @@ from apps.academics.models import (
     Competency,
     Grade,
     LearningArea,
-    Stream,
+    StreamLabel,
 )
 
 
@@ -15,6 +13,9 @@ class SchoolScopedModelForm(forms.ModelForm):
     def __init__(self, *args, school, **kwargs):
         self.school = school
         super().__init__(*args, **kwargs)
+        has_school_field = any(field.name == "school" for field in self.instance._meta.fields)
+        if has_school_field and not self.instance.school_id:
+            self.instance.school = school
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -41,15 +42,10 @@ class GradeForm(SchoolScopedModelForm):
         fields = ("code", "name", "education_level", "order", "is_active")
 
 
-class StreamForm(SchoolScopedModelForm):
+class StreamLabelForm(SchoolScopedModelForm):
     class Meta:
-        model = Stream
-        fields = ("grade", "code", "name", "is_active")
-
-    def __init__(self, *args, school, **kwargs):
-        super().__init__(*args, school=school, **kwargs)
-        grade_field = cast(forms.ModelChoiceField, self.fields["grade"])
-        grade_field.queryset = Grade.objects.for_school(school).filter(is_active=True)
+        model = StreamLabel
+        fields = ("code", "name", "is_active")
 
 
 class LearningAreaForm(SchoolScopedModelForm):

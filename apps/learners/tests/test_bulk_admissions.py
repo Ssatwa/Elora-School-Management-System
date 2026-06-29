@@ -131,6 +131,50 @@ def test_parse_bulk_admission_upload_validates_with_admission_form():
     assert result.rows[0].cleaned_data["stream"] == stream
 
 
+def test_parse_bulk_admission_upload_resolves_stream_inside_selected_grade():
+    school = cast(School, SchoolFactory())
+    year = AcademicYear.objects.create(
+        school=school,
+        name="2026",
+        start_date=date(2026, 1, 1),
+        end_date=date(2026, 12, 31),
+        status=AcademicYear.Status.ACTIVE,
+    )
+    play_group = Grade.objects.create(
+        school=school,
+        code="PG",
+        name="Play Group",
+        education_level=Grade.EducationLevel.PRE_PRIMARY,
+        order=0,
+    )
+    grade_one = Grade.objects.create(
+        school=school,
+        code="G1",
+        name="Grade 1",
+        education_level=Grade.EducationLevel.PRIMARY,
+        order=1,
+    )
+    Stream.objects.create(school=school, grade=play_group, code="N", name="North")
+    grade_one_north = Stream.objects.create(
+        school=school,
+        grade=grade_one,
+        code="N",
+        name="North",
+    )
+    content = "\n".join(
+        [
+            ",".join(bulk_admission_headers()),
+            f"Brian,,Otieno,2019-03-18,male,{year.name},{grade_one.name},North,2026-01-08,Grace,Otieno,grace.otieno@example.test,+254700120001,mother,O+,,,",
+        ]
+    )
+
+    result = parse_bulk_admission_upload(uploaded_file=csv_upload(content), school=school)
+
+    assert result.has_errors is False
+    assert result.rows[0].cleaned_data["grade"] == grade_one
+    assert result.rows[0].cleaned_data["stream"] == grade_one_north
+
+
 def test_parse_bulk_admission_upload_reports_missing_invalid_and_duplicate_rows():
     school = cast(School, SchoolFactory())
     year, grade, stream = create_academic_context(school)

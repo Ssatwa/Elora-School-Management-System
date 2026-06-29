@@ -3,6 +3,24 @@
     <div class="border-b px-5 py-4" style="border-color: var(--elora-border);">
       <h2 class="font-semibold">Grades and streams</h2>
     </div>
+    <div class="border-b px-5 py-4" style="border-color: var(--elora-border);">
+      <p class="text-xs font-semibold uppercase tracking-wide" style="color: var(--elora-muted);">School stream labels</p>
+      <div class="mt-2 flex flex-wrap gap-2">
+        {% for label in stream_labels %}
+        <span class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+          {{ label.name }}
+          <form method="post" action="{% url 'academics:delete_stream_label' label.id %}" onsubmit="return confirm('Delete {{ label.name|escapejs }} stream from this school?');">
+            {% csrf_token %}
+            <button type="submit" class="text-xs font-bold text-red-600 hover:text-red-700" aria-label="Delete {{ label.name }} stream">
+              Delete
+            </button>
+          </form>
+        </span>
+        {% empty %}
+        <span class="text-sm" style="color: var(--elora-muted);">No school stream labels configured.</span>
+        {% endfor %}
+      </div>
+    </div>
     <div class="overflow-x-auto">
       <table class="elora-table">
         <thead class="bg-slate-500/5 text-left" style="color: var(--elora-muted);">
@@ -14,7 +32,7 @@
             <td class="px-5 py-3 font-medium">{{ grade.name }}</td>
             <td class="px-5 py-3">{{ grade.get_education_level_display }}</td>
             <td class="px-5 py-3">
-              {% for stream in grade.streams.all %}{{ stream.name }}{% if not forloop.last %}, {% endif %}{% empty %}No streams{% endfor %}
+              {% for stream in grade.active_streams %}{{ stream }}{% if not forloop.last %}, {% endif %}{% empty %}No streams{% endfor %}
             </td>
           </tr>
           {% empty %}

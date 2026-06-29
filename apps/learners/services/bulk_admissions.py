@@ -2,6 +2,7 @@ import csv
 from dataclasses import dataclass, field
 from io import BytesIO, StringIO
 from pathlib import Path
+from uuid import UUID
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -258,6 +259,15 @@ def _form_data_from_row(row_values, form):
     for label, value in row_values.items():
         name = labels_to_names[label]
         field = form.fields[name]
+        if name == "stream" and data.get("grade"):
+            try:
+                grade_id = UUID(str(data["grade"]))
+            except ValueError:
+                grade_id = None
+            if grade_id is not None:
+                grade = form.fields["grade"].queryset.filter(id=grade_id).first()
+                if grade is not None:
+                    field.queryset = field.queryset.filter(grade=grade)
         if hasattr(field, "queryset"):
             data[name] = _model_choice_value(field, value)
         elif getattr(field, "choices", None):

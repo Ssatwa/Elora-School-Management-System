@@ -51,6 +51,7 @@ local_settings.py
 *.log
 .server.*.log
 learner-bulk-upload-template.csv
+outputs/
 
 # Node
 node_modules/

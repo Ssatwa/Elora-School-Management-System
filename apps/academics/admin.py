@@ -9,12 +9,13 @@ from apps.academics.models import (
     OutcomeCompetency,
     Strand,
     Stream,
+    StreamLabel,
     SubStrand,
     Term,
 )
 
 
-@admin.register(AcademicYear, Term, Grade, Stream, LearningArea, Competency)
+@admin.register(AcademicYear, Term, Grade, Stream, StreamLabel, LearningArea, Competency)
 class AcademicLookupAdmin(admin.ModelAdmin):
     list_filter = ("school",)
     search_fields = ("name",)
